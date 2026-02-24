@@ -53,7 +53,7 @@ export default function LoginPage() {
                 </button>
                 {error && <div style={{ color: "#d00", fontSize: 15 }}>{error}</div>}
             </form>
-            <Link href="/app/page.js" style={{ marginTop: 32 }}>
+            <Link href="/" style={{ marginTop: 32 }}>
                 <button style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
                     ホームへ戻る
                 </button>
