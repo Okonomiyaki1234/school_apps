@@ -1,9 +1,4 @@
 "use client";
-// イベントクリック時にdescriptionを表示
-  const handleEventClick = (info: any) => {
-    const desc = info.event.extendedProps?.description;
-    window.alert(desc ? desc : "説明はありません");
-  };
 // タグ選択肢（今はファイル内で定義）
 const TAG_OPTIONS = [
   "c1", "c2", "c3", "cAll", "h1", "h2", "h3", "hAll", "schoolAll"
@@ -18,10 +13,20 @@ import { useEffect as useAuthEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { CalendarEvent } from "@/types/event";
 
-  // isAdmin propは廃止し、認証状態で判定
+// isAdmin propは廃止し、認証状態で判定
 ;
 
 export default function Calendar() {
+  // ポップアップ用state
+  const [popup, setPopup] = useState<{ title: string; description: string } | null>(null);
+  // イベントクリック時にポップアップ表示
+  const handleEventClick = (info: any) => {
+    setPopup({
+      title: info.event.title,
+      description: info.event.extendedProps?.description ?? "説明はありません"
+    });
+  };
+
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -70,6 +75,7 @@ export default function Calendar() {
       start: e.start_date, // date型文字列
       end: e.end_date,     // date型文字列
       tags: e.tags || [],
+      description: e.description || "",
     }));
     setEvents(formatted as any);
     setLoading(false);
@@ -154,19 +160,85 @@ export default function Calendar() {
       {loading ? (
         <div style={{ textAlign: "center", color: "#888" }}>読み込み中...</div>
       ) : (
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          events={filteredEvents}
-          editable={isAdmin}
-          eventDrop={isAdmin ? handleEventDrop : undefined}
-          eventResize={isAdmin ? handleEventDrop : undefined}
-          eventDidMount={handleEventDidMount}
-          eventClick={handleEventClick}
-          height="auto"
-          locale="ja"
-          headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek,dayGridDay" }}
-        />
+        <>
+          <FullCalendar
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            events={filteredEvents}
+            editable={isAdmin}
+            eventDrop={isAdmin ? handleEventDrop : undefined}
+            eventResize={isAdmin ? handleEventDrop : undefined}
+            eventDidMount={handleEventDidMount}
+            eventClick={handleEventClick}
+            height="auto"
+            locale="ja"
+            headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek,dayGridDay" }}
+          />
+          {popup && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                background: "rgba(0,0,0,0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000
+              }}
+              onClick={() => setPopup(null)}
+            >
+              <div
+                style={{
+                  background: "#fff",
+                  borderRadius: 10,
+                  boxShadow: "0 2px 16px #8888",
+                  padding: 32,
+                  minWidth: 320,
+                  maxWidth: "80vw",
+                  textAlign: "center",
+                  position: "relative"
+                }}
+                onClick={e => e.stopPropagation()}
+              >
+                <h3 style={{ marginBottom: 16, fontSize: 22 }}>{popup.title}</h3>
+                <div style={{ fontSize: 16, color: "#333", marginBottom: 24, whiteSpace: "pre-wrap" }}>{popup.description || "説明はありません"}</div>
+                {isAdmin && (
+                  <button
+                    onClick={async () => {
+                      if (window.confirm("本当にこのイベントを削除しますか？")) {
+                        // 対象イベントを特定
+                        const event = events.find(e => e.title === popup.title && e.description === popup.description);
+                        if (event) {
+                          await handleDelete(event.id);
+                          setPopup(null);
+                        } else {
+                          alert("イベントが見つかりませんでした");
+                        }
+                      }
+                    }}
+                    style={{
+                      padding: "8px 24px",
+                      fontSize: 16,
+                      borderRadius: 6,
+                      background: "#d32f2f",
+                      color: "#fff",
+                      border: "none",
+                      cursor: "pointer",
+                      marginRight: 12
+                    }}
+                  >削除</button>
+                )}
+                <button
+                  onClick={() => setPopup(null)}
+                  style={{ padding: "8px 24px", fontSize: 16, borderRadius: 6, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer" }}
+                >閉じる</button>
+              </div>
+            </div>
+          )}
+        </>
       )}
       <p style={{ marginTop: 24, color: "#888", fontSize: 14, textAlign: "center" }}>※ 管理者のみイベント編集・削除が可能です</p>
     </div>
