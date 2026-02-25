@@ -1,31 +1,90 @@
 
+"use client";
 import Link from "next/link";
-import Header from "@/components/Header";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function LoginPage() {
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [checking, setChecking] = useState(true);
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                router.replace("/create2_school_home");
+            } else {
+                setChecking(false);
+            }
+        };
+        checkSession();
+        // サインイン後の自動遷移にも対応
+        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                router.replace("/create2_school_home");
+            }
+        });
+        return () => {
+            listener?.subscription.unsubscribe();
+        };
+    }, [router]);
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        setLoading(false);
+        if (error) {
+            setError(error.message);
+        }
+        // 成功時はonAuthStateChangeで遷移
+    };
+
+    if (checking) {
+        return null; // ローディング画面を出したい場合はここで表示
+    }
+
     return (
-        <>
-            <Header />
-            <div style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "80vh",
-                paddingTop: 56 // ヘッダー高さ分の余白
-            }}>
-                <h1 style={{ marginBottom: 32 }}>学校行事カレンダー</h1>
-                <Link href="/create4_calender">
-                    <button style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee", marginBottom: 16 }}>
-                        行事カレンダーを見る
-                    </button>
-                </Link>
-                <Link href="/create3_login">
-                    <button style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#888", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
-                        ログインページへ
-                    </button>
-                </Link>
-            </div>
-        </>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "80vh", paddingTop: 56 }}>
+            <h1 style={{ marginBottom: 32 }}>ログイン</h1>
+            <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 16, width: 320 }}>
+                <input
+                    type="email"
+                    placeholder="メールアドレス"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    style={{ padding: 12, fontSize: 16, borderRadius: 6, border: "1px solid #ccc" }}
+                />
+                <input
+                    type="password"
+                    placeholder="パスワード"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                    style={{ padding: 12, fontSize: 16, borderRadius: 6, border: "1px solid #ccc" }}
+                />
+                <button
+                    type="submit"
+                    disabled={loading}
+                    style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}
+                >
+                    {loading ? "ログイン中..." : "ログイン"}
+                </button>
+                {error && <div style={{ color: "#d00", fontSize: 15 }}>{error}</div>}
+            </form>
+            {/* 新規登録ページへ遷移するボタン */}
+            <a href="/create5_new_register" style={{ marginTop: 32, textDecoration: "none" }}>
+                <button style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
+                    新規登録ページへ
+                </button>
+            </a>
+        </div>
     );
 }

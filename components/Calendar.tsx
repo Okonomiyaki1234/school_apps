@@ -10,6 +10,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useEffect, useState, useCallback } from "react";
 import { useEffect as useAuthEffect } from "react";
+import { format } from "date-fns";
 import { supabase } from "@/lib/supabase";
 import { CalendarEvent } from "@/types/event";
 
@@ -94,13 +95,13 @@ export default function Calendar() {
   // ドラッグ&ドロップ/リサイズ
   const handleEventDrop = async (info: EventDropArg | EventResizeDoneArg) => {
     const { event } = info;
-    // FullCalendarのevent.start/endはDate型なのでdate文字列に変換
-    const toDateString = (d: Date | null) => d ? d.toISOString().slice(0, 10) : null;
+    // FullCalendarのevent.start/endはローカルタイムなので、date-fnsでローカル日付をYYYY-MM-DDに変換
+    const toLocalDateString = (d: Date | null) => d ? format(d, "yyyy-MM-dd") : null;
     await supabase
       .from("events")
       .update({
-        start_date: toDateString(event.start),
-        end_date: toDateString(event.end),
+        start_date: toLocalDateString(event.start),
+        end_date: toLocalDateString(event.end),
       })
       .eq("id", event.id);
     fetchEvents();

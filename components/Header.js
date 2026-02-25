@@ -15,19 +15,25 @@ export default function Header() {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (!user) {
+        // 未ログインならログインページへ自動遷移
+        if (pathname !== "/") {
+          router.replace("/");
+        }
+      }
     };
     getUser();
     // ログイン状態の変化を監視
     const { data: listener } = supabase.auth.onAuthStateChange(() => getUser());
     return () => { listener?.subscription.unsubscribe(); };
-  }, []);
+  }, [router, pathname]);
 
   const handleLogout = async () => {
     if (!window.confirm("本当にログアウトしますか？")) return;
     setLoggingOut(true);
     await supabase.auth.signOut();
     setLoggingOut(false);
-    router.push("/");
+    router.replace("/"); // ログインページへ自動遷移
   };
 
   return (
@@ -51,8 +57,7 @@ export default function Header() {
       <nav style={{ display: "flex", gap: 24 }}>
         <Link href="/" style={{ color: "#fff", textDecoration: "none", fontWeight: 600, fontSize: 18 }}>ホーム</Link>
         <Link href="/create4_calender" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>カレンダー</Link>
-        <Link href="/create2" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>（未実装）</Link>
-        <Link href="/create3_login" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>ログイン</Link>
+        <Link href="/" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>（未実装）</Link>
       </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
