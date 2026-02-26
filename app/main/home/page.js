@@ -23,19 +23,39 @@ export default function SchoolHome() {
 						</ul>
 					</div>
 				</div>
-				<div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-					{/* 各機能へのリンク例 */}
-					<Link href="/main/calender" style={{ textDecoration: "none" }}>
-						<button style={{ fontSize: 18, padding: "18px 36px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
-							イベントカレンダー
-						</button>
-					</Link>
-					<Link href="#" style={{ textDecoration: "none" }}>
-						<button style={{ fontSize: 18, padding: "18px 36px", borderRadius: 8, background: "#888", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }} disabled>
-							Coming Soon...
-						</button>
-					</Link>
-				</div>
+								{/* 機能リンク＋画像のリスト（ブロック全体がリンク） */}
+								<div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+									{/* イベントカレンダー */}
+									<Link href="/main/calendar" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="カレンダー" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>イベントカレンダー</div>
+												<div style={{ fontSize: 15, color: '#444' }}>学校行事やイベントをカレンダーで確認できます</div>
+											</div>
+										</div>
+									</Link>
+									<a href="https://studio-delta-six-29.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="アドバンス" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>淑徳アドバンス デジタルサイネージ</div>
+												<div style={{ fontSize: 15, color: '#444' }}>淑徳アドバンスのサイネージが確認できます。</div>
+											</div>
+										</div>
+									</a>
+									{/* Coming Soon... */}
+									<div style={{ opacity: 0.6, pointerEvents: 'none' }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18 }}>
+											<img src="https://placehold.jp/120x80.png?text=Coming+Soon" alt="Coming Soon" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#888', marginBottom: 6 }}>Coming Soon...</div>
+												<div style={{ fontSize: 15, color: '#888' }}>新しい機能を準備中です</div>
+											</div>
+										</div>
+									</div>
+									{/* ここに新しい機能を追加する場合は同じ構造で行を増やせばOK */}
+								</div>
 			</div>
 		</>
 	);
