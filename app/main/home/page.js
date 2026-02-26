@@ -8,7 +8,7 @@ export default function SchoolHome() {
 		<>
 			<Header />
 			<div style={{ maxWidth: 900, margin: "40px auto", padding: 24 }}>
-				<h1 style={{ fontSize: 32, marginBottom: 24 }}>学校ホーム（機能ハブ）</h1>
+				<h1 style={{ fontSize: 32, marginBottom: 24 }}>ホーム</h1>
 				<div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginBottom: 40 }}>
 					{/* ダミー画像エリア */}
 					<div style={{ width: 260, height: 180, background: "#eee", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 12, boxShadow: "0 2px 8px #eee" }}>
@@ -44,6 +44,15 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</a>
+									<Link href="/main/cafeteria" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="食堂" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>食堂</div>
+												<div style={{ fontSize: 15, color: '#444' }}>食堂のメニューを確認できます</div>
+											</div>
+										</div>
+									</Link>
 									{/* Coming Soon... */}
 									<div style={{ opacity: 0.6, pointerEvents: 'none' }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18 }}>
