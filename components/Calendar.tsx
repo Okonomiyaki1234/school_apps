@@ -10,7 +10,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useEffect, useState, useCallback } from "react";
 import { useEffect as useAuthEffect } from "react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { supabase } from "@/lib/supabase";
 import { CalendarEvent } from "@/types/event";
 
@@ -20,6 +20,51 @@ import { CalendarEvent } from "@/types/event";
 export default function Calendar() {
   // ポップアップ用state
   const [popup, setPopup] = useState<{ title: string; description: string } | null>(null);
+  // イベント追加モーダル用state
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addForm, setAddForm] = useState({
+    title: '',
+    description: '',
+    start_date: '',
+    end_date: '',
+  });
+
+  // 入力フォーム変更ハンドラ
+  const handleAddFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setAddForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  // イベント追加処理
+  const handleAddEvent = async () => {
+    if (!addForm.title || !addForm.start_date || !addForm.end_date) {
+      alert('タイトル・開始日・終了日は必須です');
+      return;
+    }
+    // end_dateを+1日して送信
+    let endDateStr = addForm.end_date;
+    try {
+      const endDateObj = new Date(addForm.end_date);
+      const nextDay = addDays(endDateObj, 1);
+      endDateStr = format(nextDay, 'yyyy-MM-dd');
+    } catch (e) {
+      // フォーマット失敗時はそのまま
+    }
+    const { error } = await supabase.from('events').insert({
+      title: addForm.title,
+      description: addForm.description,
+      start_date: addForm.start_date,
+      end_date: endDateStr,
+      tags: [],
+    });
+    if (error) {
+      alert('追加に失敗しました');
+      return;
+    }
+    setAddModalOpen(false);
+    setAddForm({ title: '', description: '', start_date: '', end_date: '' });
+    fetchEvents();
+  };
   // イベントクリック時にポップアップ表示
   const handleEventClick = (info: any) => {
     setPopup({
@@ -155,6 +200,15 @@ export default function Calendar() {
   return (
     <div style={{ maxWidth: 700, margin: "40px auto", background: "#fff", borderRadius: 8, boxShadow: "0 2px 8px #eee", padding: 24 }}>
       <h2 style={{ textAlign: "center", marginBottom: 24 }}>学校行事カレンダー</h2>
+      {/* 管理者のみイベント追加ボタン */}
+      {isAdmin && (
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <button
+            onClick={() => setAddModalOpen(true)}
+            style={{ padding: "8px 24px", fontSize: 16, borderRadius: 6, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer" }}
+          >イベント追加</button>
+        </div>
+      )}
       <div style={{ marginBottom: 16, textAlign: "center" }}>
         {TAG_OPTIONS.map(tag => (
           <label key={tag} style={{ marginRight: 12, fontSize: 15 }}>
@@ -177,6 +231,82 @@ export default function Calendar() {
           <span style={{ fontSize: 14, color: '#888' }}>ログインしていません</span>
         )}
       </div>
+      {/* イベント追加モーダル */}
+      {addModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000
+          }}
+          onClick={() => setAddModalOpen(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 10,
+              boxShadow: "0 2px 16px #8888",
+              padding: 32,
+              minWidth: 320,
+              maxWidth: "80vw",
+              textAlign: "center",
+              position: "relative"
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: 16, fontSize: 20 }}>イベント追加</h3>
+            <div style={{ marginBottom: 16 }}>
+              <input
+                type="text"
+                name="title"
+                placeholder="タイトル"
+                value={addForm.title}
+                onChange={handleAddFormChange}
+                style={{ width: '90%', padding: 8, fontSize: 16, marginBottom: 10, borderRadius: 4, border: '1px solid #ccc' }}
+              />
+              <br />
+              <textarea
+                name="description"
+                placeholder="説明"
+                value={addForm.description}
+                onChange={handleAddFormChange}
+                style={{ width: '90%', padding: 8, fontSize: 15, minHeight: 60, borderRadius: 4, border: '1px solid #ccc', marginBottom: 10 }}
+              />
+              <br />
+              <input
+                type="date"
+                name="start_date"
+                value={addForm.start_date}
+                onChange={handleAddFormChange}
+                style={{ marginRight: 8, padding: 6, fontSize: 15, borderRadius: 4, border: '1px solid #ccc' }}
+              />
+              ～
+              <input
+                type="date"
+                name="end_date"
+                value={addForm.end_date}
+                onChange={handleAddFormChange}
+                style={{ marginLeft: 8, padding: 6, fontSize: 15, borderRadius: 4, border: '1px solid #ccc' }}
+              />
+            </div>
+            <button
+              onClick={handleAddEvent}
+              style={{ padding: "8px 24px", fontSize: 16, borderRadius: 6, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", marginRight: 12 }}
+            >追加</button>
+            <button
+              onClick={() => setAddModalOpen(false)}
+              style={{ padding: "8px 24px", fontSize: 16, borderRadius: 6, background: "#888", color: "#fff", border: "none", cursor: "pointer" }}
+            >キャンセル</button>
+          </div>
+        </div>
+      )}
       {loading ? (
         <div style={{ textAlign: "center", color: "#888" }}>読み込み中...</div>
       ) : (
@@ -260,7 +390,7 @@ export default function Calendar() {
           )}
         </>
       )}
-      <p style={{ marginTop: 24, color: "#888", fontSize: 14, textAlign: "center" }}>※ 管理者のみイベント編集・削除が可能です</p>
+      <p style={{ marginTop: 24, color: "#888", fontSize: 14, textAlign: "center" }}>※ 管理者のみイベント編集・削除・追加が可能です</p>
     </div>
   );
 }

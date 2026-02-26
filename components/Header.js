@@ -75,7 +75,7 @@ export default function Header() {
     >
       <nav style={{ display: "flex", gap: 24 }}>
         <Link href="/" style={{ color: "#fff", textDecoration: "none", fontWeight: 600, fontSize: 18 }}>ホーム</Link>
-        <Link href="/create4_calender" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>カレンダー</Link>
+        <Link href="/main/calender" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>カレンダー</Link>
         <Link href="/" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>（未実装）</Link>
       </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>

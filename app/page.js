@@ -22,7 +22,7 @@ export default function LoginPage() {
                 if (!isMounted) return;
 
                 if (session) {
-                    router.replace("/create2_school_home");
+                    router.replace("/main/home");
                 } else {
                     setChecking(false);
                 }
@@ -38,7 +38,7 @@ export default function LoginPage() {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session) {
-                router.replace("/create2_school_home");
+                router.replace("/main/home");
             } else {
                 setChecking(false);
             }
@@ -96,7 +96,7 @@ export default function LoginPage() {
                 {error && <div style={{ color: "#d00", fontSize: 15 }}>{error}</div>}
             </form>
             {/* 新規登録ページへ遷移するボタン */}
-            <a href="/create5_new_register" style={{ marginTop: 32, textDecoration: "none" }}>
+            <a href="/auth/register" style={{ marginTop: 32, textDecoration: "none" }}>
                 <button style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
                     新規登録ページへ
                 </button>

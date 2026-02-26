@@ -25,7 +25,7 @@ export default function SchoolHome() {
 				</div>
 				<div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
 					{/* 各機能へのリンク例 */}
-					<Link href="/create4_calender" style={{ textDecoration: "none" }}>
+					<Link href="/main/calender" style={{ textDecoration: "none" }}>
 						<button style={{ fontSize: 18, padding: "18px 36px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
 							イベントカレンダー
 						</button>
