@@ -73,11 +73,49 @@ export default function Header() {
         boxShadow: "0 2px 8px #0002"
       }}
     >
-      <nav style={{ display: "flex", gap: 24 }}>
-        <Link href="/main/home" style={{ color: "#fff", textDecoration: "none", fontWeight: 600, fontSize: 18 }}>ホーム</Link>
-        <Link href="/main/calendar" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>カレンダー</Link>
-        <Link href="/" style={{ color: "#fff", textDecoration: "none", fontWeight: 500 }}>（未実装）</Link>
-      </nav>
+        <nav style={{ display: "flex", gap: 0 }}>
+          <Link
+            href="/main/home"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 600,
+              fontSize: 18,
+              padding: "0 16px",
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              borderRight: "1px solid #fff4"
+            }}
+          >ホーム</Link>
+          <Link
+            href="/main/calendar"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 500,
+              padding: "0 16px",
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              borderRight: "1px solid #fff4"
+            }}
+          >カレンダー</Link>
+          <a
+            href="https://studio-delta-six-29.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 500,
+              padding: "0 16px",
+              height: 56,
+              display: "flex",
+              alignItems: "center"
+            }}
+          >淑徳アドバンス デジタルサイネージ</a>
+        </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
           {loading
