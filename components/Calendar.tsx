@@ -35,25 +35,44 @@ export default function Calendar() {
   const [isAdmin, setIsAdmin] = useState(false);
   // 認証状態取得
   useAuthEffect(() => {
-    const getUserAndRole = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        // profilesテーブルからrole取得
+    let isMounted = true;
+
+    const syncUserAndRole = async (nextUser: any) => {
+      if (!isMounted) return;
+
+      setUser(nextUser ?? null);
+
+      if (nextUser) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
-          .eq("id", user.id)
+          .eq("id", nextUser.id)
           .single();
+
+        if (!isMounted) return;
         setIsAdmin(profile?.role === "admin");
       } else {
         setIsAdmin(false);
       }
     };
-    getUserAndRole();
-    // ログイン状態の変化を監視
-    const { data: listener } = supabase.auth.onAuthStateChange(() => getUserAndRole());
-    return () => { listener?.subscription.unsubscribe(); };
+
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      await syncUserAndRole(session?.user ?? null);
+    };
+
+    initializeAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      await syncUserAndRole(session?.user ?? null);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // イベント取得

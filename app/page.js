@@ -14,23 +14,39 @@ export default function LoginPage() {
     const [checking, setChecking] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!isMounted) return;
+
+                if (session) {
+                    router.replace("/create2_school_home");
+                } else {
+                    setChecking(false);
+                }
+            } finally {
+                if (isMounted) {
+                    setChecking(false);
+                }
+            }
+        };
+        checkSession();
+
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session) {
                 router.replace("/create2_school_home");
             } else {
                 setChecking(false);
             }
-        };
-        checkSession();
-        // サインイン後の自動遷移にも対応
-        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                router.replace("/create2_school_home");
-            }
         });
+
         return () => {
-            listener?.subscription.unsubscribe();
+            isMounted = false;
+            subscription.unsubscribe();
         };
     }, [router]);
 

@@ -10,23 +10,42 @@ export default function Header() {
   const pathname = usePathname();
   const [loggingOut, setLoggingOut] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (!user) {
-        // 未ログインならログインページへ自動遷移
-        if (pathname !== "/") {
-          router.replace("/");
-        }
-      }
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!isMounted) return;
+      setUser(session?.user ?? null);
+      setLoading(false);
     };
-    getUser();
-    // ログイン状態の変化を監視
-    const { data: listener } = supabase.auth.onAuthStateChange(() => getUser());
-    return () => { listener?.subscription.unsubscribe(); };
-  }, [router, pathname]);
+
+    initializeAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    // ローディング完了後に未ログインならリダイレクト
+    if (!loading && !user) {
+      if (pathname !== "/") {
+        router.replace("/");
+      }
+    }
+  }, [loading, user, pathname, router]);
 
   const handleLogout = async () => {
     if (!window.confirm("本当にログアウトしますか？")) return;
@@ -61,11 +80,15 @@ export default function Header() {
       </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
-          {user ? `ログイン中: ${user.email}` : "ログインしていません"}
+          {loading
+            ? "認証確認中..."
+            : user
+              ? `ログイン中: ${user.email}`
+              : "ログインしていません"}
         </span>
         <button
           onClick={handleLogout}
-          disabled={loggingOut}
+          disabled={loggingOut || loading}
           style={{
             background: "#fff",
             color: "#1976d2",
