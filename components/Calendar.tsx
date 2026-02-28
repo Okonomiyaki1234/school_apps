@@ -1,7 +1,7 @@
 "use client";
 // タグ選択肢（今はファイル内で定義）
 const TAG_OPTIONS = [
-  "c1", "c2", "c3", "cAll", "h1", "h2", "h3", "hAll", "schoolAll"
+  "中学1年", "中学2年", "中学3年", "高校1年", "高校2年", "高校3年", "図書館"
 ];
 import FullCalendar from "@fullcalendar/react";
 import type { EventDropArg, EventContentArg } from "@fullcalendar/core";
@@ -22,17 +22,35 @@ export default function Calendar() {
   const [popup, setPopup] = useState<{ title: string; description: string } | null>(null);
   // イベント追加モーダル用state
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addForm, setAddForm] = useState({
+  type AddFormType = {
+    title: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    tags: string[];
+  };
+  const [addForm, setAddForm] = useState<AddFormType>({
     title: '',
     description: '',
     start_date: '',
     end_date: '',
+    tags: [],
   });
 
   // 入力フォーム変更ハンドラ
   const handleAddFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setAddForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  // タグ選択（追加モーダル用）
+  const handleAddFormTagChange = (tag: string) => {
+    setAddForm(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag)
+        ? prev.tags.filter((t: string) => t !== tag)
+        : [...prev.tags, tag]
+    }));
   };
 
   // イベント追加処理
@@ -55,14 +73,14 @@ export default function Calendar() {
       description: addForm.description,
       start_date: addForm.start_date,
       end_date: endDateStr,
-      tags: [],
+      tags: addForm.tags,
     });
     if (error) {
       alert('追加に失敗しました');
       return;
     }
     setAddModalOpen(false);
-    setAddForm({ title: '', description: '', start_date: '', end_date: '' });
+    setAddForm({ title: '', description: '', start_date: '', end_date: '', tags: [] });
     fetchEvents();
   };
   // イベントクリック時にポップアップ表示
@@ -295,6 +313,21 @@ export default function Calendar() {
                 onChange={handleAddFormChange}
                 style={{ marginLeft: 8, padding: 6, fontSize: 15, borderRadius: 4, border: '1px solid #ccc' }}
               />
+              <br />
+              <div style={{ margin: '12px 0', textAlign: 'left', fontSize: 15 }}>
+                <span style={{ fontWeight: 'bold', marginRight: 8 }}>タグ選択:</span>
+                {TAG_OPTIONS.map(tag => (
+                  <label key={tag} style={{ marginRight: 12 }}>
+                    <input
+                      type="checkbox"
+                      checked={addForm.tags.includes(tag)}
+                      onChange={() => handleAddFormTagChange(tag)}
+                      style={{ marginRight: 4 }}
+                    />
+                    {tag}
+                  </label>
+                ))}
+              </div>
             </div>
             <button
               onClick={handleAddEvent}
