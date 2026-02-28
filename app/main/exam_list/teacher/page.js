@@ -24,6 +24,7 @@ export default function ExamAdminPage() {
     content: ''
   });
   const [addLoading, setAddLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function ExamAdminPage() {
 
   const handleEditClick = (exam) => {
     setEditId(exam.id);
-    setEditForm({ subject: exam.subject, exam: exam.exam, content: exam.content });
+    setEditForm({ subject: exam.subject, exam: exam.exam, content: exam.content, class: exam.class });
   };
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -82,7 +83,7 @@ export default function ExamAdminPage() {
   const handleEditSave = async (exam) => {
     const { error } = await supabase
       .from('exam')
-      .update({ subject: editForm.subject, exam: editForm.exam, content: editForm.content })
+      .update({ subject: editForm.subject, exam: editForm.exam, content: editForm.content, class: editForm.class })
       .eq('id', exam.id);
     if (!error) {
       setEditId(null);
@@ -96,6 +97,28 @@ export default function ExamAdminPage() {
   };
   const handleEditCancel = () => {
     setEditId(null);
+  };
+
+  // 削除ハンドラ
+  const handleDelete = async (exam) => {
+    if (!window.confirm('本当に削除しますか？')) return;
+    setDeleteLoading(true);
+    const { error } = await supabase
+      .from('exam')
+      .delete()
+      .eq('id', exam.id);
+    setDeleteLoading(false);
+    if (error) {
+      alert('削除に失敗しました');
+      return;
+    }
+    setEditId(null);
+    // 最新データ取得
+    const { data } = await supabase
+      .from('exam')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setExams(data || []);
   };
 
   // 選択肢は定数として宣言
@@ -226,6 +249,20 @@ export default function ExamAdminPage() {
                               style={{width:'90%',marginBottom:6,padding:4,borderRadius:4,border:'1px solid #ccc'}}
                               placeholder="試験名"
                             />
+                            <select
+                              name="class"
+                              value={editForm.class}
+                              onChange={handleEditChange}
+                              style={{width:'90%',marginBottom:6,padding:4,borderRadius:4,border:'1px solid #ccc'}}
+                            >
+                              <option value="">クラスを選択</option>
+                              <optgroup label="A~E組">
+                                {['A','B','C','D','E'].map(c => <option key={c} value={c}>{c}組</option>)}
+                              </optgroup>
+                              <optgroup label="1~10組">
+                                {Array.from({length:10},(_,i)=>(i+1)).map(n => <option key={n} value={n}>{n}組</option>)}
+                              </optgroup>
+                            </select>
                             <textarea
                               name="content"
                               value={editForm.content}
@@ -233,9 +270,12 @@ export default function ExamAdminPage() {
                               style={{width:'90%',marginBottom:6,padding:4,borderRadius:4,border:'1px solid #ccc',minHeight:40}}
                               placeholder="範囲"
                             />
-                            <div style={{marginTop:4}}>
-                              <button onClick={() => handleEditSave(exam)} style={{marginRight:8,padding:'4px 16px',borderRadius:4,border:'none',background:'#1976d2',color:'#fff',fontWeight:600}}>保存</button>
+                            <div style={{marginTop:4,display:'flex',gap:8}}>
+                              <button onClick={() => handleEditSave(exam)} style={{padding:'4px 16px',borderRadius:4,border:'none',background:'#1976d2',color:'#fff',fontWeight:600}}>保存</button>
                               <button onClick={handleEditCancel} style={{padding:'4px 16px',borderRadius:4,border:'none',background:'#888',color:'#fff'}}>キャンセル</button>
+                              <button onClick={() => handleDelete(exam)} disabled={deleteLoading} style={{padding:'4px 16px',borderRadius:4,border:'none',background:'#b00',color:'#fff',fontWeight:600}}>
+                                {deleteLoading ? '削除中...' : '削除'}
+                              </button>
                             </div>
                           </div>
                         ) : (

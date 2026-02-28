@@ -115,82 +115,98 @@ export default function MyPage() {
 	return (
 		<>
 			<HeaderSwitcher />
-			<div style={{ maxWidth: 520, margin: "56px auto 0", padding: 32, background: "#f7faff", borderRadius: 16, boxShadow: "0 4px 24px #0002" }}>
-				<h2 style={{ fontSize: 28, color: "#1976d2", marginBottom: 18, textAlign: "center", letterSpacing: 1 }}>マイページ</h2>
-				{message && <div style={{ color: message === "更新失敗" ? "#d32f2f" : "#388e3c", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>{message}</div>}
-				{!editMode ? (
-					<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>名前</span>
-							<span style={{ fontSize: 17 }}>{profile.name || <span style={{ color: '#aaa' }}>未登録</span>}</span>
+			<div
+				style={{
+					margin: "56px auto 0",
+					padding: 32,
+					maxWidth: 1200,
+					minHeight: "70vh",
+					display: "flex",
+					flexWrap: "wrap",
+					gap: 32,
+					background: "var(--background)",
+					borderRadius: 24,
+					boxShadow: "0 4px 32px #0002"
+				}}
+			>
+				<div style={{ flex: "1 1 340px", minWidth: 320, background: "#ffffff", borderRadius: 16, boxShadow: "0 2px 12px #1976d211", padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
+					<h2 style={{ fontSize: 28, color: "#333", marginBottom: 18, textAlign: "center", letterSpacing: 1 }}>マイページ</h2>
+					{message && <div style={{ color: message === "更新失敗" ? "#d32f2f" : "#388e3c", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>{message}</div>}
+					{!editMode ? (
+						<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>名前</span>
+								<span style={{ fontSize: 17 }}>{profile.name || <span style={{ color: '#aaa' }}>未登録</span>}</span>
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>学年</span>
+								<span style={{ fontSize: 17 }}>{profile.grade || <span style={{ color: '#aaa' }}>未登録</span>}</span>
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>クラス</span>
+								<span style={{ fontSize: 17 }}>{profile.class || <span style={{ color: '#aaa' }}>未登録</span>}</span>
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "flex-start", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>自己紹介</span>
+								<span style={{ fontSize: 16, whiteSpace: "pre-line", color: profile.description ? "#444" : "#aaa" }}>{profile.description || "未登録"}</span>
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>称号</span>
+								<span style={{ fontSize: 16, color: Array.isArray(profile.achievement) && profile.achievement.length ? "#444" : "#aaa" }}>
+									{Array.isArray(profile.achievement) && profile.achievement.length
+										? profile.achievement.join(", ")
+										: "未登録"}
+								</span>
+							</div>
+							<button onClick={() => setEditMode(true)} style={{ marginTop: 18, padding: "10px 32px", background: "#333", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>編集</button>
 						</div>
-						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>学年</span>
-							<span style={{ fontSize: 17 }}>{profile.grade || <span style={{ color: '#aaa' }}>未登録</span>}</span>
-						</div>
-						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>クラス</span>
-							<span style={{ fontSize: 17 }}>{profile.class || <span style={{ color: '#aaa' }}>未登録</span>}</span>
-						</div>
-						<div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>自己紹介</span>
-							<span style={{ fontSize: 16, whiteSpace: "pre-line", color: profile.description ? "#444" : "#aaa" }}>{profile.description || "未登録"}</span>
-						</div>
-						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>称号</span>
-							<span style={{ fontSize: 16, color: Array.isArray(profile.achievement) && profile.achievement.length ? "#444" : "#aaa" }}>
-								{Array.isArray(profile.achievement) && profile.achievement.length
-									? profile.achievement.join(", ")
-									: "未登録"}
-							</span>
-						</div>
-						<button onClick={() => setEditMode(true)} style={{ marginTop: 18, padding: "10px 32px", background: "#1976d2", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>編集</button>
-					</div>
-				) : (
-					<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-						{inputError && <div style={{ color: "#d32f2f", fontWeight: 600, marginBottom: 4 }}>{inputError}</div>}
-						<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-							<label style={{ fontWeight: 600, color: "#1976d2" }}>名前</label>
-							<input name="name" value={profile.name} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
-						</div>
-						<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-							<label style={{ fontWeight: 600, color: "#1976d2" }}>学年</label>
-							<select name="grade" value={profile.grade} onChange={handleGradeChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}>
-								<option value="">選択してください</option>
-								{GRADE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-							</select>
-							{profile.grade === "その他" && (
-								<input name="gradeOther" value={profile.gradeOther} onChange={handleChange} placeholder="学年を入力" style={{ marginTop: 6, padding: "8px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
-							)}
-						</div>
-						<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-							<label style={{ fontWeight: 600, color: "#1976d2" }}>クラス</label>
-							<input name="class" value={profile.class} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
-						</div>
-						<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-							<label style={{ fontWeight: 600, color: "#1976d2" }}>自己紹介</label>
-							<textarea name="description" value={profile.description} onChange={handleChange} rows={3} style={{ padding: "8px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #bcd", resize: "vertical" }} autoComplete="off" />
-						</div>
-						<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-							<label style={{ fontWeight: 600, color: "#1976d2" }}>称号（複数選択可）</label>
-							<select
-								multiple
-								name="achievement"
-								value={Array.isArray(profile.achievement) ? profile.achievement : []}
-								onChange={handleAchievementChange}
-								style={{ minWidth: 200, padding: "8px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}
-							>
-								{Array.isArray(profile.achievement_list)
-									? profile.achievement_list.map(a => <option key={a} value={a}>{a}</option>)
-									: DEFAULT_ACHIEVEMENT_LIST.map(a => <option key={a} value={a}>{a}</option>)}
-							</select>
-						</div>
-						<div style={{ display: "flex", gap: 16, marginTop: 8 }}>
-							<button type="submit" style={{ flex: 1, padding: "10px 0", background: "#1976d2", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>保存</button>
-							<button type="button" onClick={() => setEditMode(false)} style={{ flex: 1, padding: "10px 0", background: "#eee", color: "#1976d2", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>キャンセル</button>
-						</div>
-					</form>
-				)}
+					) : (
+						<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+							{inputError && <div style={{ color: "#d32f2f", fontWeight: 600, marginBottom: 4 }}>{inputError}</div>}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2" }}>名前</label>
+								<input name="name" value={profile.name} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2" }}>学年</label>
+								<select name="grade" value={profile.grade} onChange={handleGradeChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}>
+									<option value="">選択してください</option>
+									{GRADE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+								</select>
+								{profile.grade === "その他" && (
+									<input name="gradeOther" value={profile.gradeOther} onChange={handleChange} placeholder="学年を入力" style={{ marginTop: 6, padding: "8px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
+								)}
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2" }}>クラス</label>
+								<input name="class" value={profile.class} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2" }}>自己紹介</label>
+								<textarea name="description" value={profile.description} onChange={handleChange} rows={3} style={{ padding: "8px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #bcd", resize: "vertical" }} autoComplete="off" />
+							</div>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2" }}>称号（複数選択可）</label>
+								<select
+									multiple
+									name="achievement"
+									value={Array.isArray(profile.achievement) ? profile.achievement : []}
+									onChange={handleAchievementChange}
+									style={{ minWidth: 200, padding: "8px 12px", fontSize: 15, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}
+								>
+									{Array.isArray(profile.achievement_list)
+										? profile.achievement_list.map(a => <option key={a} value={a}>{a}</option>)
+										: DEFAULT_ACHIEVEMENT_LIST.map(a => <option key={a} value={a}>{a}</option>)}
+								</select>
+							</div>
+							<div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+								<button type="submit" style={{ flex: 1, padding: "10px 0", background: "#1976d2", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>保存</button>
+								<button type="button" onClick={() => setEditMode(false)} style={{ flex: 1, padding: "10px 0", background: "#eee", color: "#1976d2", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>キャンセル</button>
+							</div>
+						</form>
+					)}
+				</div>
+				{/* 今後追加予定の要素はここに新しいdivを追加していけばOK */}
 			</div>
 		</>
 	);

@@ -8,11 +8,13 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 const GradeFilter = dynamic(() => import('./GradeFilter.js'), { ssr: false });
+const ClassFilter = dynamic(() => import('./ClassFilter.js'), { ssr: false });
 
 export default function ExamListPage() {
   const [exams, setExams] = useState([]);
   const [error, setError] = useState(null);
   const [selectedGrades, setSelectedGrades] = useState([]);
+  const [selectedClasses, setSelectedClasses] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const gradeOptions = [
@@ -46,10 +48,17 @@ export default function ExamListPage() {
     })();
   }, []);
 
+  // クラス一覧を取得
+  const classOptions = Array.from(new Set(exams.map(e => e.class))).filter(Boolean);
+
   // クライアントサイドでフィルタリング
-  const filtered = selectedGrades.length > 0
-    ? exams.filter(e => selectedGrades.includes(e.grade))
-    : exams;
+  let filtered = exams;
+  if (selectedGrades.length > 0) {
+    filtered = filtered.filter(e => selectedGrades.includes(e.grade));
+  }
+  if (selectedClasses.length > 0) {
+    filtered = filtered.filter(e => selectedClasses.includes(e.class));
+  }
 
   // 学年・クラスごとにグループ化
   const grouped = {};
@@ -77,6 +86,7 @@ export default function ExamListPage() {
         <h1 style={{fontSize:'2rem',fontWeight:700,marginBottom:'0.5rem',color:'#234'}}>試験範囲一覧</h1>
         <p style={{color:'#555',marginBottom:'1.5rem'}}>学年・クラスごとに試験範囲を確認できます。</p>
         <GradeFilter gradeOptions={gradeOptions} selectedGrade={selectedGrades.join(',')} onChange={setSelectedGrades} />
+        <ClassFilter classOptions={classOptions} selectedClass={selectedClasses.join(',')} onChange={setSelectedClasses} />
         {isAdmin && (
           <div style={{ marginTop: '1rem' }}>
             <Link href="/main/exam_list/teacher">
