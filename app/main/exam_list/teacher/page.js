@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Header from '@/components/Header';
+import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 
 
 export default function ExamAdminPage() {
@@ -145,7 +145,7 @@ export default function ExamAdminPage() {
 
   return (
     <>
-      <Header />
+      <HeaderSwitcher />
       <div style={{ height: 32 }} />
       <div style={{maxWidth:900,margin:'40px auto',background:'#fff',borderRadius:8,boxShadow:'0 2px 8px #eee',padding:24}}>
       <div style={{marginBottom:16}}>

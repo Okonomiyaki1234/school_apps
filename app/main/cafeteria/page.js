@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Header from "@/components/Header";
+import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 import { supabase } from "@/lib/supabase";
 
 const categories = [
@@ -33,7 +33,7 @@ export default function CafeteriaPage() {
 
 	return (
 		<>
-			<Header />
+			<HeaderSwitcher />
 			<main style={{ padding: "2rem", paddingTop: "3.5rem" }}>
 				<h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "2rem", textAlign: "center" }}>食堂メニュー</h1>
 				{loading ? (

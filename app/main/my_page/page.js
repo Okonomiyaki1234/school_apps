@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import Header from "@/components/Header";
+import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 
 const DEFAULT_ACHIEVEMENT_LIST = [
 	"皆勤賞", "優秀賞", "部活リーダー", "生徒会", "ボランティア", "英検合格", "漢検合格"
@@ -114,7 +114,7 @@ export default function MyPage() {
 
 	return (
 		<>
-			<Header />
+			<HeaderSwitcher />
 			<div style={{ maxWidth: 520, margin: "56px auto 0", padding: 32, background: "#f7faff", borderRadius: 16, boxShadow: "0 4px 24px #0002" }}>
 				<h2 style={{ fontSize: 28, color: "#1976d2", marginBottom: 18, textAlign: "center", letterSpacing: 1 }}>マイページ</h2>
 				{message && <div style={{ color: message === "更新失敗" ? "#d32f2f" : "#388e3c", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>{message}</div>}

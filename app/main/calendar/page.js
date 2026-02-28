@@ -1,12 +1,11 @@
-
 "use client";
 import Calendar from "@/components/Calendar";
-import Header from "@/components/Header";
+import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 
 export default function CalendarPage() {
   return (
     <>
-      <Header />
+      <HeaderSwitcher />
       <div style={{
         maxWidth: 800,
         margin: "40px auto",

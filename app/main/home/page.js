@@ -1,12 +1,11 @@
-
 "use client";
-import Header from "@/components/Header";
+import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 import Link from "next/link";
 
 export default function SchoolHome() {
 	return (
 		<>
-			<Header />
+			<HeaderSwitcher />
 			<div style={{ maxWidth: 900, margin: "40px auto", padding: 24 }}>
 				<h1 style={{ fontSize: 32, marginBottom: 24 }}>ホーム</h1>
 				<div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginBottom: 40 }}>

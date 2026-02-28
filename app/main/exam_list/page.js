@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import Header from '@/components/Header';
+import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 const GradeFilter = dynamic(() => import('./GradeFilter.js'), { ssr: false });
 
 export default function ExamListPage() {
@@ -63,7 +63,7 @@ export default function ExamListPage() {
 
   return (
     <>
-      <Header />
+      <HeaderSwitcher />
       <div style={{ height: 32 }} />
       <main style={{
         maxWidth: 900,
