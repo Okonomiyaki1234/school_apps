@@ -121,23 +121,23 @@ export default function MyPage() {
 				{!editMode ? (
 					<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#1976d2", minWidth: 80 }}>名前</span>
+							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>名前</span>
 							<span style={{ fontSize: 17 }}>{profile.name || <span style={{ color: '#aaa' }}>未登録</span>}</span>
 						</div>
 						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#1976d2", minWidth: 80 }}>学年</span>
+							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>学年</span>
 							<span style={{ fontSize: 17 }}>{profile.grade || <span style={{ color: '#aaa' }}>未登録</span>}</span>
 						</div>
 						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#1976d2", minWidth: 80 }}>クラス</span>
+							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>クラス</span>
 							<span style={{ fontSize: 17 }}>{profile.class || <span style={{ color: '#aaa' }}>未登録</span>}</span>
 						</div>
 						<div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#1976d2", minWidth: 80 }}>自己紹介</span>
+							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>自己紹介</span>
 							<span style={{ fontSize: 16, whiteSpace: "pre-line", color: profile.description ? "#444" : "#aaa" }}>{profile.description || "未登録"}</span>
 						</div>
 						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#1976d2", minWidth: 80 }}>称号</span>
+							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>称号</span>
 							<span style={{ fontSize: 16, color: Array.isArray(profile.achievement) && profile.achievement.length ? "#444" : "#aaa" }}>
 								{Array.isArray(profile.achievement) && profile.achievement.length
 									? profile.achievement.join(", ")
