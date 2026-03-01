@@ -55,6 +55,11 @@ export default function Header() {
     router.replace("/"); // ログインページへ自動遷移
   };
 
+  // ページトップへスクロールする関数
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <header
       style={{
@@ -70,65 +75,41 @@ export default function Header() {
         justifyContent: "space-between",
         padding: "0 32px",
         zIndex: 2000,
-        boxShadow: "0 2px 8px #f48fb166"
+        boxShadow: "0 2px 8px #0002"
       }}
     >
-        <nav style={{ display: "flex", gap: 0 }}>
-          <Link
-            href="/main/home"
-            style={{
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: 18,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #fff4"
-            }}
-          >ホーム</Link>
-          <Link
-            href="/main/my_page"
-            style={{
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 500,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #fff4"
-            }}
-          >マイページ</Link>
-          <Link
-            href="/main/calendar"
-            style={{
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 500,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #fff4"
-            }}
-          >カレンダー</Link>
-          <a
-            href="https://studio-delta-six-29.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 500,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center"
-            }}
-          >淑徳アドバンス デジタルサイネージ</a>
-        </nav>
+      <nav style={{ display: "flex", gap: 0 }}>
+        <Link
+          href="/main/home"
+          style={{
+            color: "#fff",
+            textDecoration: "none",
+            fontWeight: 600,
+            fontSize: 18,
+            padding: "0 16px",
+            height: 56,
+            display: "flex",
+            alignItems: "center",
+            borderRight: "1px solid #fff4"
+          }}
+        >ホーム</Link>
+        {/* トップへ戻るボタン追加 */}
+        <button
+          onClick={scrollToTop}
+          style={{
+            background: "#f48fb1",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            padding: "8px 16px",
+            fontWeight: 600,
+            fontSize: 15,
+            marginLeft: 8,
+            cursor: "pointer",
+            // boxShadow: "0 1px 4px #0001"
+          }}
+        >トップへ</button>
+      </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
           {loading
@@ -142,14 +123,14 @@ export default function Header() {
           disabled={loggingOut || loading}
           style={{
             background: "#fff",
-            color: "#222",
+            color: "#f48fb1",
             border: "none",
             borderRadius: 6,
             padding: "8px 20px",
             fontWeight: 600,
             fontSize: 15,
             cursor: "pointer",
-            boxShadow: "0 1px 4px #f48fb166"
+            boxShadow: "0 1px 4px #0001"
           }}
         >
           {loggingOut ? "ログアウト中..." : "ログアウト"}

@@ -55,6 +55,11 @@ export default function Header() {
     router.replace("/"); // ログインページへ自動遷移
   };
 
+  // ページトップへスクロールする関数
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <header
       style={{
@@ -64,7 +69,7 @@ export default function Header() {
         width: "100vw",
         height: 56,
         background: "#a5d6a7",
-        color: "#333",
+        color: "#fff",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -73,64 +78,40 @@ export default function Header() {
         boxShadow: "0 2px 8px #0002"
       }}
     >
-        <nav style={{ display: "flex", gap: 0 }}>
-          <Link
-            href="/main/home"
-            style={{
-              color: "#333",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: 18,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #3332"
-            }}
-          >ホーム</Link>
-          <Link
-            href="/main/my_page"
-            style={{
-              color: "#333",
-              textDecoration: "none",
-              fontWeight: 500,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #3332"
-            }}
-          >マイページ</Link>
-          <Link
-            href="/main/calendar"
-            style={{
-              color: "#333",
-              textDecoration: "none",
-              fontWeight: 500,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #3332"
-            }}
-          >カレンダー</Link>
-          <a
-            href="https://studio-delta-six-29.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "#333",
-              textDecoration: "none",
-              fontWeight: 500,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center"
-            }}
-          >淑徳アドバンス デジタルサイネージ</a>
-        </nav>
+      <nav style={{ display: "flex", gap: 0 }}>
+        <Link
+          href="/main/home"
+          style={{
+            color: "#fff",
+            textDecoration: "none",
+            fontWeight: 600,
+            fontSize: 18,
+            padding: "0 16px",
+            height: 56,
+            display: "flex",
+            alignItems: "center",
+            borderRight: "1px solid #3332"
+          }}
+        >ホーム</Link>
+        {/* トップへ戻るボタン追加 */}
+        <button
+          onClick={scrollToTop}
+          style={{
+            background: "#a5d6a7",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            padding: "8px 16px",
+            fontWeight: 600,
+            fontSize: 15,
+            marginLeft: 8,
+            cursor: "pointer",
+            // boxShadow: "0 1px 4px #0002"
+          }}
+        >トップへ</button>
+      </nav>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <span style={{ fontSize: 14, color: "#333", opacity: 0.9 }}>
+        <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
           {loading
             ? "認証確認中..."
             : user
@@ -142,14 +123,14 @@ export default function Header() {
           disabled={loggingOut || loading}
           style={{
             background: "#fff",
-            color: "#333",
+            color: "#a5d6a7",
             border: "none",
             borderRadius: 6,
             padding: "8px 20px",
             fontWeight: 600,
             fontSize: 15,
             cursor: "pointer",
-            boxShadow: "0 1px 4px #a5d6a766"
+            boxShadow: "0 1px 4px #0002"
           }}
         >
           {loggingOut ? "ログアウト中..." : "ログアウト"}
