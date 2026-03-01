@@ -34,6 +34,15 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</Link>
+									<Link href="/questions" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="匿名質問" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>匿名質問</div>
+												<div style={{ fontSize: 15, color: '#444' }}>匿名で質問を投稿・閲覧できます</div>
+											</div>
+										</div>
+									</Link>
 									<Link href="/main/calendar" style={{ textDecoration: "none" }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="カレンダー" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
