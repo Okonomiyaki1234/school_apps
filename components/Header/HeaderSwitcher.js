@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import HeaderDefault from "./HeaderDefault";
 import HeaderDark from "./HeaderDark";
 import HeaderCool from "./HeaderCool";
@@ -16,20 +17,42 @@ const HEADER_MAP = {
 
 export default function HeaderSwitcher() {
   const [themeId, setThemeId] = useState("default");
+  const [availableThemes, setAvailableThemes] = useState([]);
+  const [loadingThemes, setLoadingThemes] = useState(true);
 
   // 初期化時とthemeId変更時にbodyへテーマクラスを付与
   useEffect(() => {
-    const stored = localStorage.getItem("themeId");
-    const id = stored && HEADER_MAP[stored] ? stored : "default";
-    setThemeId(id);
-    document.body.classList.remove(
-      "theme-default",
-      "theme-dark",
-      "theme-cool",
-      "theme-cute",
-      "theme-natural"
-    );
-    document.body.classList.add(`theme-${id}`);
+    // ユーザーのテーマ取得
+    const fetchThemes = async () => {
+      setLoadingThemes(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      let themes = ["default"];
+      if (session?.user) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("themes")
+          .eq("id", session.user.id)
+          .single();
+        if (!error && data && Array.isArray(data.themes)) {
+          themes = data.themes.length > 0 ? data.themes : ["default"];
+        }
+      }
+      setAvailableThemes(themes);
+      setLoadingThemes(false);
+      // localStorageから初期テーマ
+      const stored = localStorage.getItem("themeId");
+      const id = stored && HEADER_MAP[stored] ? stored : themes[0] || "default";
+      setThemeId(id);
+      document.body.classList.remove(
+        "theme-default",
+        "theme-dark",
+        "theme-cool",
+        "theme-cute",
+        "theme-natural"
+      );
+      document.body.classList.add(`theme-${id}`);
+    };
+    fetchThemes();
   }, []);
 
   useEffect(() => {
@@ -50,6 +73,18 @@ export default function HeaderSwitcher() {
   };
 
   const HeaderComponent = HEADER_MAP[themeId] || HeaderDefault;
+
+  // テーマ一覧
+  const THEME_LABELS = {
+    default: "ライト",
+    dark: "ダーク",
+    cool: "クール",
+    cute: "キュート",
+    natural: "ナチュラル"
+  };
+
+  // 全テーマ
+  const ALL_THEMES = ["default", "dark", "cool", "cute", "natural"];
 
   return (
     <>
@@ -85,12 +120,22 @@ export default function HeaderSwitcher() {
             outline: "none",
             boxShadow: "0 1px 4px #1976d211"
           }}
+          disabled={loadingThemes}
         >
-          <option value="default">ライト</option>
-          <option value="dark">ダーク</option>
-          <option value="cool">クール</option>
-          <option value="cute">キュート</option>
-          <option value="natural">ナチュラル</option>
+          {ALL_THEMES.map(theme => (
+            <option
+              key={theme}
+              value={theme}
+              disabled={!availableThemes.includes(theme)}
+              style={{
+                color: availableThemes.includes(theme) ? "#222" : "#aaa",
+                background: availableThemes.includes(theme) ? "#fff" : "#eee"
+              }}
+            >
+              {THEME_LABELS[theme]}
+              {!availableThemes.includes(theme) ? "（ロック）" : ""}
+            </option>
+          ))}
         </select>
       </div>
     </>
