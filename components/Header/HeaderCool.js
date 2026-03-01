@@ -75,20 +75,6 @@ export default function Header() {
     >
         <nav style={{ display: "flex", gap: 0 }}>
           <Link
-            href="/main/my_page"
-            style={{
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: 18,
-              padding: "0 16px",
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              borderRight: "1px solid #fff4"
-            }}
-          >マイページ</Link>
-          <Link
             href="/main/home"
             style={{
               color: "#fff",
@@ -102,6 +88,19 @@ export default function Header() {
               borderRight: "1px solid #fff4"
             }}
           >ホーム</Link>
+          <Link
+            href="/main/my_page"
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 500,
+              padding: "0 16px",
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              borderRight: "1px solid #fff4"
+            }}
+          >マイページ</Link>
           <Link
             href="/main/calendar"
             style={{
