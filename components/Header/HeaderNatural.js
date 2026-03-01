@@ -75,6 +75,20 @@ export default function Header() {
     >
         <nav style={{ display: "flex", gap: 0 }}>
           <Link
+            href="/main/my_page"
+            style={{
+              color: "#333",
+              textDecoration: "none",
+              fontWeight: 600,
+              fontSize: 18,
+              padding: "0 16px",
+              height: 56,
+              display: "flex",
+              alignItems: "center",
+              borderRight: "1px solid #3332"
+            }}
+          >マイページ</Link>
+          <Link
             href="/main/home"
             style={{
               color: "#333",
