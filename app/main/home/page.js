@@ -15,9 +15,9 @@ export default function SchoolHome() {
 					</div>
 					{/* 情報エリア例 */}
 					<div style={{ flex: 1, minWidth: 260 }}>
-						<h2 style={{ fontSize: 22, marginBottom: 12 }}>お知らせ</h2>
+						<h2 style={{ fontSize: 22, marginBottom: 12 }}>アップデート情報</h2>
 						<ul style={{ paddingLeft: 20, color: "#444" }}>
-							<li>イベントカレンダーが利用できます</li>
+							<li>お知らせ機能を追加しました。生徒会や教員からのお知らせも来ます。</li>
 							<li>新機能は順次追加予定です</li>
 						</ul>
 					</div>
