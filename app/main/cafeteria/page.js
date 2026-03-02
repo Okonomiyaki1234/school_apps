@@ -5,10 +5,11 @@ import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 import { supabase } from "@/lib/supabase";
 
 const categories = [
-  { key: "rice", label: "米系" },
-  { key: "noodle", label: "麺類" },
+  { key: "main", label: "メイン系" },
+  { key: "main2", label: "弁当メイン系" },
   { key: "snack", label: "軽食" },
-  { key: "drink", label: "飲み物" },
+  { key: "night", label: "夜間" },
+  { key: "other", label: "その他" },
 ];
 
 export default function CafeteriaPage() {
