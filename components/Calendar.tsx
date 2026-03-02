@@ -114,6 +114,13 @@ export default function Calendar() {
 
         if (!isMounted) return;
         setIsAdmin(profile?.role === "admin");
+          // カレンダー利用称号判定
+          try {
+            const { handleUseAchievement } = await import("@/lib/achievement");
+            await handleUseAchievement(nextUser.id, "calendar");
+          } catch (e) {
+            console.error("カレンダー利用称号判定失敗", e);
+          }
       } else {
         setIsAdmin(false);
       }

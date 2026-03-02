@@ -79,6 +79,13 @@ export default function LoginPage() {
                 setLoading(false);
                 return;
             }
+                // 称号判定ロジック呼び出し
+                try {
+                    const { handleLoginAchievement } = await import("@/lib/achievement");
+                    await handleLoginAchievement(userId);
+                } catch (e) {
+                    console.error("称号判定ロジックの呼び出しに失敗", e);
+                }
         }
         setLoading(false);
         // 成功時はonAuthStateChangeで遷移

@@ -16,9 +16,23 @@ export default function CafeteriaPage() {
 	const [menuData, setMenuData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+    const [userId, setUserId] = useState(null);
 
 	useEffect(() => {
 		let isMounted = true;
+        // メニュー利用称号判定
+        (async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user?.id) {
+                setUserId(session.user.id);
+                try {
+                    const { handleUseAchievement } = await import("@/lib/achievement");
+                    await handleUseAchievement(session.user.id, "menu");
+                } catch (e) {
+                    console.error("メニュー利用称号判定失敗", e);
+                }
+            }
+        })();
 		(async () => {
 			const { data, error } = await supabase
 				.from('cafeteria_menu')
