@@ -29,8 +29,17 @@ export default function SchoolHome() {
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="マイページ" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>マイページ</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>マイページ</div>
 												<div style={{ fontSize: 15, color: '#444' }}>自分のプロフィールや設定を確認・編集できます</div>
+											</div>
+										</div>
+									</Link>
+									<Link href="/main/notice" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="お知らせ" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>お知らせ</div>
+												<div style={{ fontSize: 15, color: '#444' }}>最新のお知らせを確認できます</div>
 											</div>
 										</div>
 									</Link>
@@ -38,7 +47,7 @@ export default function SchoolHome() {
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="匿名質問" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>匿名質問</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>匿名質問</div>
 												<div style={{ fontSize: 15, color: '#444' }}>匿名で質問を投稿・閲覧できます</div>
 											</div>
 										</div>
@@ -47,7 +56,7 @@ export default function SchoolHome() {
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="カレンダー" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>イベントカレンダー</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>イベントカレンダー</div>
 												<div style={{ fontSize: 15, color: '#444' }}>学校行事やイベントをカレンダーで確認できます</div>
 											</div>
 										</div>
@@ -56,7 +65,7 @@ export default function SchoolHome() {
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="アドバンス" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>淑徳アドバンス デジタルサイネージ</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>淑徳アドバンス デジタルサイネージ</div>
 												<div style={{ fontSize: 15, color: '#444' }}>淑徳アドバンスのサイネージが確認できます。</div>
 											</div>
 										</div>
@@ -65,7 +74,7 @@ export default function SchoolHome() {
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="食堂" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>食堂</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>食堂</div>
 												<div style={{ fontSize: 15, color: '#444' }}>食堂のメニューを確認できます</div>
 											</div>
 										</div>
@@ -74,7 +83,7 @@ export default function SchoolHome() {
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="試験範囲" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#1976d2', marginBottom: 6 }}>試験範囲</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>試験範囲</div>
 												<div style={{ fontSize: 15, color: '#444' }}>試験範囲を確認できます</div>
 											</div>
 										</div>

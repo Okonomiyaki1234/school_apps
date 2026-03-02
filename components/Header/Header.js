@@ -10,15 +10,35 @@ export default function Header() {
   const pathname = usePathname();
   const [loggingOut, setLoggingOut] = useState(false);
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
+    const fetchProfile = async (user) => {
+      if (!user) {
+        setUserProfile(null);
+        return;
+      }
+      // プロフィール取得（profilesテーブルにname, roleがある前提）
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("name, role")
+        .eq("id", user.id)
+        .single();
+      if (!error) {
+        setUserProfile(data);
+      } else {
+        setUserProfile(null);
+      }
+    };
+
     const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!isMounted) return;
       setUser(session?.user ?? null);
+      await fetchProfile(session?.user ?? null);
       setLoading(false);
     };
 
@@ -26,9 +46,10 @@ export default function Header() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted) return;
       setUser(session?.user ?? null);
+      await fetchProfile(session?.user ?? null);
       setLoading(false);
     });
 
@@ -115,9 +136,19 @@ export default function Header() {
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
           {loading
             ? "認証確認中..."
-            : user
-              ? `ログイン中: ${user.email}`
-              : "ログインしていません"}
+            : user && userProfile
+              ? `ログイン中: ${userProfile.name}（${(() => {
+                  switch (userProfile.role) {
+                    case "student": return "生徒";
+                    case "council": return "生徒会";
+                    case "admin": return "教員";
+                    case "operator": return "運営";
+                    default: return userProfile.role;
+                  }
+                })()}）`
+              : user
+                ? "ユーザー情報取得中..."
+                : "ログインしていません"}
         </span>
         <button
           onClick={handleLogout}

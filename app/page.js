@@ -54,11 +54,33 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setError("");
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        setLoading(false);
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
+            setLoading(false);
             setError(error.message);
+            return;
         }
+        // ログイン成功時、roleを取得して判定
+        if (data && data.session && data.session.user) {
+            const userId = data.session.user.id;
+            const { data: profile, error: profileError } = await supabase
+                .from("profiles")
+                .select("role")
+                .eq("id", userId)
+                .single();
+            if (profileError) {
+                setLoading(false);
+                setError("ユーザー情報の取得に失敗しました");
+                return;
+            }
+            if (profile?.role === "user") {
+                alert("ログインは成功していますが、組織側で登録されていないため、ログアウトさせて頂きます。");
+                await supabase.auth.signOut();
+                setLoading(false);
+                return;
+            }
+        }
+        setLoading(false);
         // 成功時はonAuthStateChangeで遷移
     };
 
