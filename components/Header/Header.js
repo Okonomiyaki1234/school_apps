@@ -41,7 +41,8 @@ export default function Header() {
   useEffect(() => {
     // ローディング完了後に未ログインならリダイレクト
     if (!loading && !user) {
-      if (pathname !== "/") {
+      // auth/registerページではリダイレクトしない
+      if (pathname !== "/" && pathname !== "/auth/register") {
         router.replace("/");
       }
     }

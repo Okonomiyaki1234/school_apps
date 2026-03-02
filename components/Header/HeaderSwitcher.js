@@ -36,21 +36,33 @@ export default function HeaderSwitcher() {
         if (!error && data && Array.isArray(data.themes)) {
           themes = data.themes.length > 0 ? data.themes : ["default"];
         }
+        // ログイン状態: localStorageはユーザーのテーマに合わせる
+        const stored = localStorage.getItem("themeId");
+        const id = stored && HEADER_MAP[stored] ? stored : themes[0] || "default";
+        setThemeId(id);
+        document.body.classList.remove(
+          "theme-default",
+          "theme-dark",
+          "theme-cool",
+          "theme-cute",
+          "theme-natural"
+        );
+        document.body.classList.add(`theme-${id}`);
+      } else {
+        // ログアウト状態: localStorageのthemeIdを強制的に"default"へ
+        localStorage.setItem("themeId", "default");
+        setThemeId("default");
+        document.body.classList.remove(
+          "theme-default",
+          "theme-dark",
+          "theme-cool",
+          "theme-cute",
+          "theme-natural"
+        );
+        document.body.classList.add("theme-default");
       }
       setAvailableThemes(themes);
       setLoadingThemes(false);
-      // localStorageから初期テーマ
-      const stored = localStorage.getItem("themeId");
-      const id = stored && HEADER_MAP[stored] ? stored : themes[0] || "default";
-      setThemeId(id);
-      document.body.classList.remove(
-        "theme-default",
-        "theme-dark",
-        "theme-cool",
-        "theme-cute",
-        "theme-natural"
-      );
-      document.body.classList.add(`theme-${id}`);
     };
     fetchThemes();
   }, []);
