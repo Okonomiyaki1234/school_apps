@@ -22,6 +22,7 @@ export default function NoticePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ title: "", description: "", image: null });
+    const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
   // created_byのroleキャッシュ
@@ -110,6 +111,7 @@ export default function NoticePage() {
         });
       if (insertError) throw new Error("投稿失敗: " + insertError.message);
       setForm({ title: "", description: "", image: null });
+        setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       // 再取得
       const { data } = await supabase
@@ -168,9 +170,25 @@ export default function NoticePage() {
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
-                onChange={e => setForm(f => ({ ...f, image: e.target.files[0] }))}
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    setForm(f => ({ ...f, image: file }));
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setImagePreview(url);
+                    } else {
+                      setImagePreview(null);
+                    }
+                  }}
                 style={{ fontSize: 15 }}
               />
+                {form.image && imagePreview && (
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>画像プレビュー:</div>
+                    <img src={imagePreview} alt="プレビュー" style={{ maxWidth: 240, maxHeight: 160, borderRadius: 8, boxShadow: '0 2px 8px #eee' }} />
+                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{form.image.name}</div>
+                  </div>
+                )}
             </div>
             <button
               type="submit"

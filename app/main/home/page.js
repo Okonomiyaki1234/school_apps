@@ -10,11 +10,10 @@ export default function SchoolHome() {
 		(async () => {
 			const { data, error } = await supabase
 				.from("notice")
-				.select("id, title, content, created_at")
-				.order("created_at", { ascending: false })
-				.limit(3);
+				.select("*")
+				.order("created_at", { ascending: false });
 			if (!error && Array.isArray(data)) {
-				setNotices(data);
+				setNotices(data.slice(0, 3));
 			}
 		})();
 	}, []);
