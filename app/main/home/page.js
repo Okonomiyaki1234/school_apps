@@ -1,8 +1,24 @@
 "use client";
 import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function SchoolHome() {
+	const [notices, setNotices] = useState([]);
+	useEffect(() => {
+		(async () => {
+			const { data, error } = await supabase
+				.from("notice")
+				.select("id, title, content, created_at")
+				.order("created_at", { ascending: false })
+				.limit(3);
+			if (!error && Array.isArray(data)) {
+				setNotices(data);
+			}
+		})();
+	}, []);
+
 	return (
 		<>
 			<HeaderSwitcher />
@@ -13,12 +29,21 @@ export default function SchoolHome() {
 					<div style={{ width: 260, height: 180, background: "#eee", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 12, boxShadow: "0 2px 8px #eee" }}>
 						<span style={{ color: "#888", fontSize: 18 }}>ここに画像が入ります</span>
 					</div>
-					{/* 情報エリア例 */}
+					{/* 情報エリア：最新のお知らせ3件 */}
 					<div style={{ flex: 1, minWidth: 260 }}>
-						<h2 style={{ fontSize: 22, marginBottom: 12 }}>アップデート情報</h2>
-						<ul style={{ paddingLeft: 20, color: "#444" }}>
-							<li>お知らせ機能を追加しました。生徒会や教員からのお知らせも来ます。</li>
-							<li>新機能は順次追加予定です</li>
+						<h2 style={{ fontSize: 22, marginBottom: 12 }}>最新のお知らせ</h2>
+						<ul style={{ paddingLeft: 20, color: "#444", marginBottom: 12 }}>
+							{notices.length === 0 ? (
+								<li style={{ color: '#aaa' }}>お知らせはありません</li>
+							) : (
+								notices.map(n => (
+									<li key={n.id} style={{ marginBottom: 8 }}>
+										<span style={{ fontWeight: 600 }}>{n.title}</span>
+										<span style={{ color: '#888', fontSize: 13, marginLeft: 8 }}>{new Date(n.created_at).toLocaleDateString()}</span>
+										<div style={{ fontSize: 15, color: '#444', marginTop: 2 }}>{n.content}</div>
+									</li>
+								))
+							)}
 						</ul>
 					</div>
 				</div>
