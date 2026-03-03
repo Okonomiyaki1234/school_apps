@@ -22,11 +22,13 @@ export default function NoticePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ title: "", description: "", image: null });
-    const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
   // created_byのroleキャッシュ
   const [userRoles, setUserRoles] = useState({});
+  // 検索語
+  const [search, setSearch] = useState("");
 
   // セッション・role取得
   useEffect(() => {
@@ -142,9 +144,20 @@ export default function NoticePage() {
       <HeaderSwitcher />
       <div style={{ maxWidth: 700, margin: "40px auto", padding: 24 }}>
         <h1 style={{ fontSize: 28, marginBottom: 24 }}>お知らせ</h1>
+        {/* 検索フォーム */}
+        <div style={{ marginBottom: 24 }}>
+          <input
+            type="text"
+            placeholder="タイトル・説明文で検索"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: "100%", padding: 10, fontSize: 16, borderRadius: 6, border: "1px solid #ccc" }}
+          />
+        </div>
         {/* 投稿フォーム（権限者のみ） */}
         {canPost && (
           <form onSubmit={handleSubmit} style={{ marginBottom: 32, background: "#f7faff", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px #eee" }}>
+            {/* ...existing code... */}
             <div style={{ marginBottom: 12 }}>
               <input
                 type="text"
@@ -170,25 +183,25 @@ export default function NoticePage() {
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
-                  onChange={e => {
-                    const file = e.target.files[0];
-                    setForm(f => ({ ...f, image: file }));
-                    if (file) {
-                      const url = URL.createObjectURL(file);
-                      setImagePreview(url);
-                    } else {
-                      setImagePreview(null);
-                    }
-                  }}
+                onChange={e => {
+                  const file = e.target.files[0];
+                  setForm(f => ({ ...f, image: file }));
+                  if (file) {
+                    const url = URL.createObjectURL(file);
+                    setImagePreview(url);
+                  } else {
+                    setImagePreview(null);
+                  }
+                }}
                 style={{ fontSize: 15 }}
               />
-                {form.image && imagePreview && (
-                  <div style={{ marginTop: 10 }}>
-                    <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>画像プレビュー:</div>
-                    <img src={imagePreview} alt="プレビュー" style={{ maxWidth: 240, maxHeight: 160, borderRadius: 8, boxShadow: '0 2px 8px #eee' }} />
-                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{form.image.name}</div>
-                  </div>
-                )}
+              {form.image && imagePreview && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>画像プレビュー:</div>
+                  <img src={imagePreview} alt="プレビュー" style={{ maxWidth: 240, maxHeight: 160, borderRadius: 8, boxShadow: '0 2px 8px #eee' }} />
+                  <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{form.image.name}</div>
+                </div>
+              )}
             </div>
             <button
               type="submit"
@@ -205,10 +218,18 @@ export default function NoticePage() {
           <div>読み込み中...</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {notices.length === 0 ? (
-              <div>お知らせはありません</div>
-            ) : (
-              notices.map(notice => {
+            {/* 検索語でフィルタ */}
+            {(() => {
+              const filtered = search.trim() === ""
+                ? notices
+                : notices.filter(n =>
+                    n.title?.toLowerCase().includes(search.toLowerCase()) ||
+                    n.description?.toLowerCase().includes(search.toLowerCase())
+                  );
+              if (filtered.length === 0) {
+                return <div>お知らせはありません</div>;
+              }
+              return filtered.map(notice => {
                 let roleLabel = "";
                 const role = userRoles[notice.created_by];
                 if (role === "council") roleLabel = "生徒会";
@@ -218,7 +239,14 @@ export default function NoticePage() {
                 return (
                   <div key={notice.id} style={{ background: "#fff", borderRadius: 10, boxShadow: "0 2px 8px #eee", padding: 18 }}>
                     <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 6 }}>{notice.title}</div>
-                    <div style={{ fontSize: 15, color: "#444", marginBottom: 8 }}>{notice.description}</div>
+                    <div style={{ fontSize: 15, color: "#444", marginBottom: 8 }}>
+                      {notice.description?.split("\n").map((line, idx, arr) => (
+                        <span key={idx}>
+                          {line}
+                          {idx !== arr.length - 1 && <br />}
+                        </span>
+                      ))}
+                    </div>
                     {notice.image_url && (
                       <img src={notice.image_url} alt="お知らせ画像" style={{ maxWidth: "100%", borderRadius: 8, marginBottom: 8 }} />
                     )}
@@ -227,8 +255,8 @@ export default function NoticePage() {
                     </div>
                   </div>
                 );
-              })
-            )}
+              });
+            })()}
           </div>
         )}
       </div>

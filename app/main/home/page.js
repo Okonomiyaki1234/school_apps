@@ -121,6 +121,15 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</Link>
+									<a href="https://attendance-register-by-watashimori-kohl.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="出欠登録サイト(同製作者による外部サイト)" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>出欠登録サイト</div>
+												<div style={{ fontSize: 15, color: '#444' }}>出欠登録を行うことができます。※同製作者による外部サイトです。</div>
+											</div>
+										</div>
+									</a>
 									{/* Coming Soon... */}
 									<div style={{ opacity: 0.6, pointerEvents: 'none' }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18 }}>

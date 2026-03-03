@@ -142,7 +142,18 @@ export default function AchievementPage() {
               }}>
                 <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: 8 }}>{a.name}</h3>
                 <div style={{ fontSize: "0.95rem", fontWeight: "bold", marginBottom: 6 }}>レベル: {a.level}</div>
-                {obtained ? <p style={{ textAlign: "center", margin: 0 }}>{a.description}</p> : <p style={{ fontStyle: "italic", margin: 0 }}>ロック中</p>}
+                {obtained ? (
+                  <p style={{ textAlign: "center", margin: 0 }}>
+                    {a.description.split("\n").map((line, idx) => (
+                      <span key={idx}>
+                        {line}
+                        {idx !== a.description.split("\n").length - 1 && <br />}
+                      </span>
+                    ))}
+                  </p>
+                ) : (
+                  <p style={{ fontStyle: "italic", margin: 0 }}>ロック中</p>
+                )}
               </div>
             </div>
           );
