@@ -1,3 +1,7 @@
+// background: "#0097a7",
+// color: "#fff",
+// borderRight: "1px solid #fff4"
+// box-shadow: 0 2px 8px #0097a766;
 "use client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -11,15 +15,35 @@ export default function Header() {
   const pathname = usePathname();
   const [loggingOut, setLoggingOut] = useState(false);
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
+    const fetchProfile = async (user) => {
+      if (!user) {
+        setUserProfile(null);
+        return;
+      }
+      // プロフィール取得（profilesテーブルにname, roleがある前提）
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("name, role")
+        .eq("id", user.id)
+        .single();
+      if (!error) {
+        setUserProfile(data);
+      } else {
+        setUserProfile(null);
+      }
+    };
+
     const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!isMounted) return;
       setUser(session?.user ?? null);
+      await fetchProfile(session?.user ?? null);
       setLoading(false);
     };
 
@@ -27,9 +51,10 @@ export default function Header() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted) return;
       setUser(session?.user ?? null);
+      await fetchProfile(session?.user ?? null);
       setLoading(false);
     });
 
@@ -42,6 +67,7 @@ export default function Header() {
   useEffect(() => {
     // ローディング完了後に未ログインならリダイレクト
     if (!loading && !user) {
+      // auth/registerページではリダイレクトしない
       if (pathname !== "/" && pathname !== "/auth/register") {
         router.replace("/");
       }
@@ -81,7 +107,7 @@ export default function Header() {
     >
       {/* ハンバーガーメニュー（モバイル） */}
       <div className="header-left" style={{ display: "flex", alignItems: "center" }}>
-        <div className="hamburger" style={{ display: "none" }}>
+        <div className="hamburger">
           <button
             aria-label="メニュー"
             style={{
@@ -97,7 +123,7 @@ export default function Header() {
             <span style={{ fontWeight: "bold" }}>&#9776;</span>
           </button>
         </div>
-        <nav className="header-nav" style={{ display: "flex", gap: 0 }}>
+        <nav className="header-nav" style={{ gap: 0 }}>
           <Link
             href="/main/home"
             style={{
@@ -126,15 +152,63 @@ export default function Header() {
               cursor: "pointer"
             }}
           >トップへ</button>
+          {/* モバイル時のみユーザー情報とログアウトボタンをメニュー内に表示 */}
+          <div className="header-mobile-user">
+            <span style={{ fontSize: 14, color: "#fff", opacity: 0.9, margin: "12px 0" }}>
+              {loading
+                ? "認証確認中..."
+                : user && userProfile
+                  ? `ログイン中: ${userProfile.name}（${(() => {
+                      switch (userProfile.role) {
+                        case "student": return "生徒";
+                        case "council": return "生徒会";
+                        case "admin": return "教員";
+                        case "operator": return "運営";
+                        default: return userProfile.role;
+                      }
+                    })()}）`
+                  : user
+                    ? "ユーザー情報取得中..."
+                    : "ログインしていません"}
+            </span>
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut || loading}
+              style={{
+                background: "#fff",
+                color: "#0097a7",
+                border: "none",
+                borderRadius: 6,
+                padding: "8px 20px",
+                fontWeight: 600,
+                fontSize: 15,
+                cursor: "pointer",
+                boxShadow: "0 1px 4px #0001",
+                margin: "12px 0"
+              }}
+            >
+              {loggingOut ? "ログアウト中..." : "ログアウト"}
+            </button>
+          </div>
         </nav>
       </div>
       <div className="header-right" style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
           {loading
             ? "認証確認中..."
-            : user
-              ? `ログイン中: ${user.email}`
-              : "ログインしていません"}
+            : user && userProfile
+              ? `ログイン中: ${userProfile.name}（${(() => {
+                  switch (userProfile.role) {
+                    case "student": return "生徒";
+                    case "council": return "生徒会";
+                    case "admin": return "教員";
+                    case "operator": return "運営";
+                    default: return userProfile.role;
+                  }
+                })()}）`
+              : user
+                ? "ユーザー情報取得中..."
+                : "ログインしていません"}
         </span>
         <button
           onClick={handleLogout}
@@ -147,7 +221,8 @@ export default function Header() {
             padding: "8px 20px",
             fontWeight: 600,
             fontSize: 15,
-            cursor: "pointer"
+            cursor: "pointer",
+            boxShadow: "0 1px 4px #0001"
           }}
         >
           {loggingOut ? "ログアウト中..." : "ログアウト"}
@@ -155,7 +230,7 @@ export default function Header() {
       </div>
       {/* レスポンシブ用CSS */}
       <style jsx>{`
-        @media (max-width: 700px) {
+        @media (max-width: 1024px) {
           .header-nav {
             display: ${menuOpen ? "flex" : "none"};
             position: absolute;
@@ -173,8 +248,17 @@ export default function Header() {
           .hamburger {
             display: block;
           }
+          .header-mobile-user {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0 16px;
+          }
+          .header-right {
+            display: none !important;
+          }
         }
-        @media (min-width: 701px) {
+        @media (min-width: 1025px) {
           .header-nav {
             display: flex !important;
             position: static;
@@ -184,6 +268,12 @@ export default function Header() {
           }
           .hamburger {
             display: none !important;
+          }
+          .header-mobile-user {
+            display: none !important;
+          }
+          .header-right {
+            display: flex !important;
           }
         }
       `}</style>
