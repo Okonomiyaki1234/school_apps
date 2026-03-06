@@ -24,6 +24,8 @@ export default function MyPage() {
 		achievement: [],
 		achievement_list: DEFAULT_ACHIEVEMENT_LIST
 	});
+	const JUNIOR_CLASSES = ["A", "B", "C", "D", "E"];
+	const HIGH_CLASSES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 	const [inputError, setInputError] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [editMode, setEditMode] = useState(false);
@@ -65,7 +67,12 @@ export default function MyPage() {
 			return;
 		}
 		setInputError("");
-		setProfile(prev => ({ ...prev, [name]: value }));
+		// 卒業生・その他の場合はclassを自動で"なし"に
+		if (name === "gradeOther" && (profile.grade === "卒業生" || profile.grade === "その他")) {
+			setProfile(prev => ({ ...prev, [name]: value, class: "なし" }));
+		} else {
+			setProfile(prev => ({ ...prev, [name]: value }));
+		}
 	};
 	// achievement複数選択
 	const handleAchievementChange = e => {
@@ -80,7 +87,11 @@ export default function MyPage() {
 	// 学年選択変更
 	const handleGradeChange = e => {
 		const value = e.target.value;
-		setProfile(prev => ({ ...prev, grade: value, gradeOther: "" }));
+		let classValue = "";
+		if (value === "卒業生" || value === "その他") {
+			classValue = "なし";
+		}
+		setProfile(prev => ({ ...prev, grade: value, gradeOther: "", class: classValue }));
 	};
 
 	// 更新処理
@@ -94,12 +105,16 @@ export default function MyPage() {
 		setInputError("");
 		setLoading(true);
 		let gradeValue = profile.grade === "その他" ? profile.gradeOther : profile.grade;
+		let classValue = profile.class;
+		if (profile.grade === "卒業生" || profile.grade === "その他") {
+			classValue = "なし";
+		}
 		const { error } = await supabase
 			.from("profiles")
 			.update({
 				name: profile.name,
 				grade: gradeValue,
-				class: profile.class,
+				class: classValue,
 				description: profile.description,
 				achievement: profile.achievement
 			})
@@ -179,7 +194,21 @@ export default function MyPage() {
 							</div>
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
 								<label style={{ fontWeight: 600, color: "#1976d2" }}>クラス</label>
-								<input name="class" value={profile.class} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
+								{profile.grade.startsWith("中学") && (
+									<select name="class" value={profile.class} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}>
+										<option value="">選択してください</option>
+										{JUNIOR_CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
+									</select>
+								)}
+								{profile.grade.startsWith("高校") && (
+									<select name="class" value={profile.class} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}>
+										<option value="">選択してください</option>
+										{HIGH_CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
+									</select>
+								)}
+								{(profile.grade === "卒業生" || profile.grade === "その他") && (
+									<input name="class" value="なし" disabled style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd", background: "#eee", color: "#aaa" }} />
+								)}
 							</div>
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
 								<label style={{ fontWeight: 600, color: "#1976d2" }}>自己紹介</label>
