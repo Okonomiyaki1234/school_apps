@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabase";
 import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
@@ -9,7 +9,7 @@ const DEFAULT_ACHIEVEMENT_LIST = [
 ];
 
 export default function OtherUserPage({ params }) {
-	const { id } = params;
+	const { id } = use(params);
 	const [profile, setProfile] = useState({
 		name: "",
 		grade: "",
