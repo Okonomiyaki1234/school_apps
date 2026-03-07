@@ -1,0 +1,28 @@
+.container {
+  padding: 2rem;
+}
+.cardGrid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.card {
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  padding: 2.5rem;
+  min-width: 340px;
+  max-width: 420px;
+  box-shadow: 0 4px 16px #eee;
+  background: #fff;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  font-size: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card:hover {
+  box-shadow: 0 4px 16px #ddd;
+}

@@ -2,10 +2,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { iconList } from "@/lib/iconList";
 
 const DEFAULT_ACHIEVEMENT_LIST = [
 	"皆勤賞", "優秀賞", "部活リーダー", "生徒会", "ボランティア", "英検合格", "漢検合格"
 ];
+const DEFAULT_ICON = iconList[0];
 
 const GRADE_OPTIONS = [
 	"中学1年生", "中学2年生", "中学3年生",
@@ -22,7 +24,8 @@ export default function MyPage() {
 		class: "",
 		description: "",
 		achievement: [],
-		achievement_list: DEFAULT_ACHIEVEMENT_LIST
+		achievement_list: DEFAULT_ACHIEVEMENT_LIST,
+		icon: DEFAULT_ICON
 	});
 	const JUNIOR_CLASSES = ["A", "B", "C", "D", "E"];
 	const HIGH_CLASSES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -41,14 +44,15 @@ export default function MyPage() {
 			if (session?.user) {
 				const { data, error } = await supabase
 					.from("profiles")
-					.select("name, grade, class, description, achievement, achievement_list")
+					.select("name, grade, class, description, achievement, achievement_list, icon")
 					.eq("id", session.user.id)
 					.single();
 				if (data) {
 					setProfile(prev => ({
 						...prev,
 						...data,
-						achievement_list: Array.isArray(data.achievement_list) ? data.achievement_list : DEFAULT_ACHIEVEMENT_LIST
+						achievement_list: Array.isArray(data.achievement_list) ? data.achievement_list : DEFAULT_ACHIEVEMENT_LIST,
+						icon: data.icon || DEFAULT_ICON
 					}));
 				}
 			}
@@ -94,6 +98,11 @@ export default function MyPage() {
 		setProfile(prev => ({ ...prev, grade: value, gradeOther: "", class: classValue }));
 	};
 
+	// アイコン選択
+	const handleIconChange = e => {
+		setProfile(prev => ({ ...prev, icon: e.target.value }));
+	};
+
 	// 更新処理
 	const handleSubmit = async e => {
 		e.preventDefault();
@@ -116,7 +125,8 @@ export default function MyPage() {
 				grade: gradeValue,
 				class: classValue,
 				description: profile.description,
-				achievement: profile.achievement
+				achievement: profile.achievement,
+				icon: profile.icon
 			})
 			.eq("id", user.id);
 		setLoading(false);
@@ -149,39 +159,47 @@ export default function MyPage() {
 					{message && <div style={{ color: message === "更新失敗" ? "#d32f2f" : "#388e3c", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>{message}</div>}
 					{!editMode ? (
 						<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+							{/* アイコン表示 */}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>アイコン</span>
+								<img src={profile.icon} alt="icon" style={{ width: 48, height: 48, borderRadius: "50%", border: "1px solid #bcd", objectFit: "cover" }} />
+							</div>
+							{/* ...existing code... */}
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
 								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>名前</span>
 								<span style={{ fontSize: 17 }}>{profile.name || <span style={{ color: '#aaa' }}>未登録</span>}</span>
 							</div>
-							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>学年</span>
-								<span style={{ fontSize: 17 }}>{profile.grade || <span style={{ color: '#aaa' }}>未登録</span>}</span>
-							</div>
-							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>クラス</span>
-								<span style={{ fontSize: 17 }}>{profile.class || <span style={{ color: '#aaa' }}>未登録</span>}</span>
-							</div>
-							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "flex-start", gap: 12 }}>
-								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>自己紹介</span>
-								<span style={{ fontSize: 16, whiteSpace: "pre-line", color: profile.description ? "#444" : "#aaa" }}>{profile.description || "未登録"}</span>
-							</div>
-							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>称号</span>
-								<span style={{ fontSize: 16, color: Array.isArray(profile.achievement) && profile.achievement.length ? "#444" : "#aaa" }}>
-									{Array.isArray(profile.achievement) && profile.achievement.length
-										? profile.achievement.join(", ")
-										: "未登録"}
-								</span>
-							</div>
+							{/* ...existing code... */}
 							<button onClick={() => setEditMode(true)} style={{ marginTop: 18, padding: "10px 32px", background: "#333", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>編集</button>
 						</div>
 					) : (
 						<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 							{inputError && <div style={{ color: "#d32f2f", fontWeight: 600, marginBottom: 4 }}>{inputError}</div>}
+							{/* アイコン選択 */}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2" }}>アイコン</label>
+								<div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+									{iconList.map(icon => (
+										<label key={icon} style={{ cursor: "pointer" }}>
+											<input
+												type="radio"
+												name="icon"
+												value={icon}
+												checked={profile.icon === icon}
+												onChange={handleIconChange}
+												style={{ marginRight: 6 }}
+											/>
+											<img src={icon} alt="icon" style={{ width: 40, height: 40, borderRadius: "50%", border: profile.icon === icon ? "2px solid #1976d2" : "1px solid #bcd", objectFit: "cover" }} />
+										</label>
+									))}
+								</div>
+							</div>
+							{/* ...existing code... */}
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
 								<label style={{ fontWeight: 600, color: "#1976d2" }}>名前</label>
 								<input name="name" value={profile.name} onChange={handleChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd" }} autoComplete="off" />
 							</div>
+							{/* ...existing code... */}
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
 								<label style={{ fontWeight: 600, color: "#1976d2" }}>学年</label>
 								<select name="grade" value={profile.grade} onChange={handleGradeChange} style={{ padding: "8px 12px", fontSize: 16, borderRadius: 6, border: "1px solid #bcd", background: "#fff" }}>

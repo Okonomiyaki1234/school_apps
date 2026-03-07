@@ -130,6 +130,15 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</a>
+									<Link href="/main/tutorial" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="チュートリアル" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>チュートリアル</div>
+												<div style={{ fontSize: 15, color: '#444' }}>チュートリアルを確認できます</div>
+											</div>
+										</div>
+									</Link>
 									{/* Coming Soon... */}
 									<div style={{ opacity: 0.6, pointerEvents: 'none' }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18 }}>
