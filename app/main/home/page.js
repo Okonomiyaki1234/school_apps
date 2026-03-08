@@ -76,7 +76,7 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</Link>
-									<Link href="/questions" style={{ textDecoration: "none" }}>
+									<Link href="/main/question" style={{ textDecoration: "none" }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="匿名質問" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
