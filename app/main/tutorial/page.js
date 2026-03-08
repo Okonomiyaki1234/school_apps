@@ -4,6 +4,12 @@ import Link from 'next/link';
 
 const features = [
 	{
+		title: 'はじめに',
+		description: 'アプリの概要と使い方を見る',
+		href: '/main/tutorial/contents/t_intro',
+		img: 'https://placehold.jp/120x80.png?text=Intro',
+	},
+	{
 		title: 'マイページ',
 		description: 'マイページ機能の説明を見る',
 		href: '/main/tutorial/contents/t_my_page',
@@ -38,6 +44,12 @@ const features = [
 		description: '試験範囲機能の説明を見る',
 		href: '/main/tutorial/contents/t_exam_list',
 		img: 'https://placehold.jp/120x80.png?text=Exam',
+	},
+    {
+		title: 'Googleチャット',
+		description: 'Googleチャットの使い方を見る',
+		href: '/main/tutorial/contents/t_i_chat',
+		img: 'https://placehold.jp/120x80.png?text=Chat',
 	},
 ];
 
