@@ -11,6 +11,7 @@ const AnswerNewPage = ({ params }) => {
   const [answers, setAnswers] = useState([]);
   const [userNames, setUserNames] = useState({});
   const [userIcons, setUserIcons] = useState({});
+  const [userRoles, setUserRoles] = useState({});
 
   React.useEffect(() => {
     if (questionId) {
@@ -24,20 +25,32 @@ const AnswerNewPage = ({ params }) => {
   }, [questionId]);
 
   React.useEffect(() => {
-    // 全ユーザーのユーザー名とアイコンを取得
+    // 全ユーザーのユーザー名・アイコン・roleを取得
     const fetchNames = async () => {
-      const { data } = await supabase.from('profiles').select('id, name, icon');
+      const { data } = await supabase.from('profiles').select('id, name, icon, role');
       const nameMap = {};
       const iconMap = {};
+      const roleMap = {};
       data?.forEach(u => {
         nameMap[u.id] = u.name;
         iconMap[u.id] = u.icon;
+        roleMap[u.id] = u.role;
       });
       setUserNames(nameMap);
       setUserIcons(iconMap);
+      setUserRoles(roleMap);
     };
     fetchNames();
   }, []);
+  // roleラベル判定
+  const getRoleLabel = (role) => {
+    if (!role) return '';
+    if (role === 'user') return '不法者';
+    if (role === 'student' || role === 'council') return '生徒';
+    if (role === 'admin') return '教員';
+    if (role === 'operator') return '運営';
+    return '';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,6 +111,11 @@ const AnswerNewPage = ({ params }) => {
                   <span style={{fontWeight:'bold',fontSize:'1rem',color:'#222'}}>
                     {userNames[question.user_id] ? userNames[question.user_id] : (userNames[question.user_id] === '' ? '未登録' : '未登録')}
                   </span>
+                  {getRoleLabel(userRoles[question.user_id]) && (
+                    <span style={{marginLeft:'6px',fontSize:'0.95rem',color:'#1976d2',fontWeight:'bold',background:'#e3f2fd',borderRadius:'4px',padding:'2px 8px'}}>
+                      {getRoleLabel(userRoles[question.user_id])}
+                    </span>
+                  )}
                 </div>
               </a>
             </div>
@@ -118,6 +136,11 @@ const AnswerNewPage = ({ params }) => {
                       <span style={{fontWeight:'bold',fontSize:'1rem',color:'#222'}}>
                         {userNames[a.user_id] ? userNames[a.user_id] : (userNames[a.user_id] === '' ? '未登録' : '未登録')}
                       </span>
+                      {getRoleLabel(userRoles[a.user_id]) && (
+                        <span style={{marginLeft:'6px',fontSize:'0.95rem',color:'#1976d2',fontWeight:'bold',background:'#e3f2fd',borderRadius:'4px',padding:'2px 8px'}}>
+                          {getRoleLabel(userRoles[a.user_id])}
+                        </span>
+                      )}
                     </div>
                   </a>
                 </div>
