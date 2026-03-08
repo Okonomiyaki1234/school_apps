@@ -42,7 +42,7 @@ export default function ExamListTutorial() {
         <div style={{ ...cardStyle, maxWidth: '500px', minWidth: '320px', padding: '2rem', margin: '0 auto' }}>
           <h3 style={{ fontSize: '1.1rem', marginBottom: '0.7rem', textAlign: 'center', fontWeight: 600, lineHeight: 1.5 }}>試験範囲例</h3>
           <div style={{ background: '#fff', borderRadius: '8px', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', marginBottom: '1rem', lineHeight: 2.0 }}>
-            <span style={{ fontSize: '1.05rem', fontWeight: 500, lineHeight: 2.0 }}>教科：数学<br />範囲：教科書p.10〜p.30<br />担当教師：田中先生</span>
+            <span style={{ fontSize: '1.05rem', fontWeight: 500, lineHeight: 2.0 }}>教科：数学<br />範囲：教科書p.10〜p.30</span>
           </div>
         </div>
         <p style={{ color: '#888', marginTop: '1.5rem', textAlign: 'center', lineHeight: 2.0 }}>※試験範囲は学年・クラスごとに異なります。</p>

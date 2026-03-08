@@ -42,7 +42,7 @@ export default function MyPageTutorial() {
         <div style={{ ...cardStyle, maxWidth: '500px', minWidth: '320px', padding: '2rem', margin: '0 auto' }}>
           <h3 style={{ fontSize: '1.1rem', marginBottom: '0.7rem', textAlign: 'center', fontWeight: 600, lineHeight: 1.5 }}>プロフィール例</h3>
           <div style={{ background: '#fff', borderRadius: '8px', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', marginBottom: '1rem', lineHeight: 2.0 }}>
-            <span style={{ fontSize: '1.05rem', fontWeight: 500, lineHeight: 2.0 }}>氏名：山田太郎<br />学年：3年<br />アイコン画像：<img src="https://placehold.jp/40x40.png" alt="アイコン" style={{ verticalAlign: 'middle', borderRadius: '50%' }} /></span>
+            <span style={{ fontSize: '1.05rem', fontWeight: 500, lineHeight: 2.0 }}>名前：山田太郎<br />学年：高校1年<br />クラス：A<br />自己紹介：は？<br />称号：人の心とかないんか？<br />アイコン画像：<img src="https://placehold.jp/40x40.png" alt="アイコン" style={{ verticalAlign: 'middle', borderRadius: '50%' }} /></span>
           </div>
         </div>
         <p style={{ color: '#888', marginTop: '1.5rem', textAlign: 'center', lineHeight: 2.0 }}>※プロフィール情報は個人ごとに異なります。</p>

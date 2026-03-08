@@ -159,17 +159,50 @@ export default function MyPage() {
 					{message && <div style={{ color: message === "更新失敗" ? "#d32f2f" : "#388e3c", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>{message}</div>}
 					{!editMode ? (
 						<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-							{/* アイコン表示 */}
-							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>アイコン</span>
-								<img src={profile.icon} alt="icon" style={{ width: 48, height: 48, borderRadius: "50%", border: "1px solid #bcd", objectFit: "cover" }} />
+							{/* アイコンを大きく中央に表示 */}
+							<div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+								<img
+									src={profile.icon}
+									alt="icon"
+									style={{
+										width: 96,
+										height: 96,
+										borderRadius: "50%",
+										border: "2px solid #bcd",
+										objectFit: "cover",
+										boxShadow: "0 2px 16px #1976d233"
+									}}
+								/>
 							</div>
-							{/* ...existing code... */}
+							{/* 名前 */}
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
 								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>名前</span>
 								<span style={{ fontSize: 17 }}>{profile.name || <span style={{ color: '#aaa' }}>未登録</span>}</span>
 							</div>
-							{/* ...existing code... */}
+							{/* 学年 */}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>学年</span>
+								<span style={{ fontSize: 17 }}>{profile.grade || <span style={{ color: '#aaa' }}>未登録</span>}</span>
+							</div>
+							{/* クラス */}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>クラス</span>
+								<span style={{ fontSize: 17 }}>{profile.class || <span style={{ color: '#aaa' }}>未登録</span>}</span>
+							</div>
+							{/* 自己紹介 */}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "flex-start", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>自己紹介</span>
+								<span style={{ fontSize: 16, whiteSpace: "pre-line", color: profile.description ? "#444" : "#aaa" }}>{profile.description || "未登録"}</span>
+							</div>
+							{/* 称号 */}
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+								<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>称号</span>
+								<span style={{ fontSize: 16, color: Array.isArray(profile.achievement) && profile.achievement.length ? "#444" : "#aaa" }}>
+									{Array.isArray(profile.achievement) && profile.achievement.length
+										? profile.achievement.join(", ")
+										: "未登録"}
+								</span>
+							</div>
 							<button onClick={() => setEditMode(true)} style={{ marginTop: 18, padding: "10px 32px", background: "#333", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>編集</button>
 						</div>
 					) : (

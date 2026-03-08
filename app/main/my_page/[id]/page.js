@@ -71,12 +71,22 @@ export default function OtherUserPage({ params }) {
 			>
 				<div style={{ flex: "1 1 340px", minWidth: 320, background: "#fff", borderRadius: 16, boxShadow: "0 2px 12px #1976d211", padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
 					<h2 style={{ fontSize: 28, color: "#333", marginBottom: 18, textAlign: "center", letterSpacing: 1 }}>ユーザープロフィール</h2>
+                {/* アイコンを大きく中央に表示 */}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+                    <img
+                        src={profile.icon}
+                        alt="icon"
+                        style={{
+                            width: 96,
+                            height: 96,
+                            borderRadius: "50%",
+                            border: "2px solid #bcd",
+                            objectFit: "cover",
+                            boxShadow: "0 2px 16px #1976d233"
+                        }}
+                    />
+                </div>
 					<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-						{/* アイコン表示 */}
-						<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>アイコン</span>
-							<img src={profile.icon} alt="icon" style={{ width: 48, height: 48, borderRadius: "50%", border: "1px solid #bcd", objectFit: "cover" }} />
-						</div>
 						{/* ...existing code... */}
 						<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
 							<span style={{ fontWeight: 600, color: "#333", minWidth: 80 }}>名前</span>
