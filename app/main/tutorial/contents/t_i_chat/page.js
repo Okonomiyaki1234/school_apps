@@ -37,6 +37,14 @@ export default function GoogleChatTutorial() {
 					<div style={{ fontSize: 15, color: '#888' }}>
 						詳しい使い方は、Googleチャットの公式ヘルプや先生に確認してください。
 					</div>
+                {/* chat_img画像表示セクション */}
+                <div style={{ marginTop: 32, textAlign: 'center' }}>
+					<h2 style={{ fontSize: 20, marginBottom: 16 }}>Googleチャット画面例</h2>
+					<img src="/tutorial/contents/t_i_chat/chat_img/chat1.png" alt="Googleチャット画面1" style={{ width: '80%', maxWidth: 600, marginBottom: 12, borderRadius: 12, boxShadow: '0 2px 8px #eee' }} />
+					<div style={{ fontSize: 16, color: '#555', marginBottom: 24 }}>Gmailのこの場所からチャットを開けて…</div>
+					<img src="/tutorial/contents/t_i_chat/chat_img/chat2.png" alt="Googleチャット画面2" style={{ width: '80%', maxWidth: 600, marginBottom: 12, borderRadius: 12, boxShadow: '0 2px 8px #eee' }} />
+					<div style={{ fontSize: 16, color: '#555' }}>この画面からチャットができる！</div>
+                </div>
 				</div>
 			</main>
 		</div>
