@@ -1,18 +1,16 @@
 import type { NextConfig } from "next";
-import withPWA from "next-pwa";
+const isPWA = process.env.VERCEL === "1";
 
-const isProd = process.env.NODE_ENV === "production" && process.env.VERCEL === "1";
-
-const baseConfig: NextConfig = {
-  // 他のNext.js設定があればここに追加
+let nextConfig: NextConfig = {
+  /* config options here */
 };
 
-const pwaConfig = {
-  dest: "public",
-  disable: !isProd,
-  register: true,
-  skipWaiting: true,
-  // manifestやswのパスはデフォルトでOK
-};
+if (isPWA) {
+  const withPWA = require("next-pwa")({
+    dest: "public",
+    disable: !isPWA,
+  });
+  nextConfig = withPWA(nextConfig);
+}
 
-export default isProd ? withPWA({ ...baseConfig, pwa: pwaConfig }) : baseConfig;
+export default nextConfig;

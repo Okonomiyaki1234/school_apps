@@ -4,8 +4,8 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#317EFB",
-  "description": "淑徳中学・高等学校のアプリケーション",
+  "theme_color": "#4f46e5",
+  "description": "淑徳中学・高等学校のポータルアプリ",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
