@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
+import Footer from "@/components/Footer";
 import styles from './QuestionPage.module.css';
 
 const QuestionPage = () => {
@@ -103,6 +104,7 @@ const QuestionPage = () => {
           </div>
         </div>
       ))}
+      <Footer />
     </div>
   );
 };

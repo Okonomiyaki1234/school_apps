@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from '../../../components/Header/HeaderDefault';
+import Footer from "@/components/Footer";
 import Link from 'next/link';
 
 const features = [
@@ -73,6 +74,7 @@ export default function TutorialHub() {
 					))}
 				</div>
 			</main>
+			<Footer />
 		</div>
 	);
 }

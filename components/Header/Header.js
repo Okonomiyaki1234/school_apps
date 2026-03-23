@@ -119,9 +119,10 @@ export default function Header() {
             <span style={{ fontWeight: "bold" }}>&#9776;</span>
           </button>
         </div>
+        {/* PC用ナビゲーション */}
         <nav className="header-nav" style={{ gap: 0 }}>
           <Link
-            href="/main/home"
+            href="/"
             style={{
               color: "#fff",
               textDecoration: "none",
@@ -148,46 +149,9 @@ export default function Header() {
               cursor: "pointer"
             }}
           >トップへ</button>
-          {/* モバイル時のみユーザー情報とログアウトボタンをメニュー内に表示 */}
-          <div className="header-mobile-user">
-            <span style={{ fontSize: 14, color: "#fff", opacity: 0.9, margin: "12px 0" }}>
-              {loading
-                ? "認証確認中..."
-                : user && userProfile
-                  ? `ログイン中: ${userProfile.name}（${(() => {
-                      switch (userProfile.role) {
-                        case "student": return "生徒";
-                        case "council": return "生徒会";
-                        case "admin": return "教員";
-                        case "operator": return "運営";
-                        default: return userProfile.role;
-                      }
-                    })()}）`
-                  : user
-                    ? "ユーザー情報取得中..."
-                    : "ログインしていません"}
-            </span>
-            <button
-              onClick={handleLogout}
-              disabled={loggingOut || loading}
-              style={{
-                background: "#fff",
-                color: "#1976d2",
-                border: "none",
-                borderRadius: 6,
-                padding: "8px 20px",
-                fontWeight: 600,
-                fontSize: 15,
-                cursor: "pointer",
-                boxShadow: "0 1px 4px #0001",
-                margin: "12px 0"
-              }}
-            >
-              {loggingOut ? "ログアウト中..." : "ログアウト"}
-            </button>
-          </div>
         </nav>
       </div>
+      {/* PC用ユーザー情報・ログアウト */}
       <div className="header-right" style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
           {loading
@@ -224,34 +188,135 @@ export default function Header() {
           {loggingOut ? "ログアウト中..." : "ログアウト"}
         </button>
       </div>
+
+      {/* モバイル用オーバーレイメニュー */}
+      {menuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setMenuOpen(false)}>
+          <div className="mobile-menu" onClick={e => e.stopPropagation()}>
+            <button
+              aria-label="閉じる"
+              style={{
+                background: "none",
+                border: "none",
+                color: "#1976d2",
+                fontSize: 32,
+                position: "absolute",
+                top: 12,
+                right: 16,
+                cursor: "pointer"
+              }}
+              onClick={() => setMenuOpen(false)}
+            >×</button>
+            <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 40 }}>
+              <Link
+                href="/main/home"
+                style={{
+                  color: "#1976d2",
+                  background: "#fff",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: 20,
+                  padding: "12px 32px",
+                  borderRadius: 8,
+                  margin: "12px 0",
+                  width: 180,
+                  textAlign: "center",
+                  boxShadow: "0 1px 4px #0001"
+                }}
+                onClick={() => setMenuOpen(false)}
+              >ホーム/リロード</Link>
+              <button
+                onClick={() => { scrollToTop(); setMenuOpen(false); }}
+                style={{
+                  background: "#fff",
+                  color: "#1976d2",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "12px 32px",
+                  fontWeight: 600,
+                  fontSize: 20,
+                  margin: "12px 0",
+                  width: 180,
+                  boxShadow: "0 1px 4px #0001",
+                  textAlign: "center"
+                }}
+              >トップへ</button>
+              <button
+                onClick={() => { handleLogout(); setMenuOpen(false); }}
+                disabled={loggingOut || loading}
+                style={{
+                  background: "#1976d2",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "12px 32px",
+                  fontWeight: 600,
+                  fontSize: 20,
+                  margin: "12px 0",
+                  width: 180,
+                  boxShadow: "0 1px 4px #0001",
+                  textAlign: "center"
+                }}
+              >{loggingOut ? "ログアウト中..." : "ログアウト"}</button>
+              <span style={{ fontSize: 14, color: "#1976d2", opacity: 0.9, margin: "16px 0" }}>
+                {loading
+                  ? "認証確認中..."
+                  : user && userProfile
+                    ? `ログイン中: ${userProfile.name}（${(() => {
+                        switch (userProfile.role) {
+                          case "student": return "生徒";
+                          case "council": return "生徒会";
+                          case "admin": return "教員";
+                          case "operator": return "運営";
+                          default: return userProfile.role;
+                        }
+                      })()}）`
+                    : user
+                      ? "ユーザー情報取得中..."
+                      : "ログインしていません"}
+              </span>
+            </nav>
+          </div>
+        </div>
+      )}
+
       {/* レスポンシブ用CSS */}
       <style jsx>{`
         @media (max-width: 1024px) {
           .header-nav {
-            display: ${menuOpen ? "flex" : "none"};
-            position: absolute;
-            top: 56px;
-            left: 0;
-            width: 100vw;
-            background: #1976d2;
-            flex-direction: column;
-            z-index: 3000;
-            box-shadow: 0 2px 8px #0002;
+            display: none !important;
           }
-          .header-left {
-            width: 100%;
+          .header-right {
+            display: none !important;
           }
           .hamburger {
             display: block;
           }
-          .header-mobile-user {
+          .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.25);
+            z-index: 3000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+          }
+          .mobile-menu {
+            position: relative;
+            background: #fff;
+            color: #1976d2;
+            border-radius: 16px;
+            margin-top: 60px;
+            min-width: 240px;
+            min-height: 220px;
+            box-shadow: 0 4px 24px #0002;
+            padding: 32px 0 24px 0;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            padding: 0 16px;
-          }
-          .header-right {
-            display: none !important;
+            align-items: center;
           }
         }
         @media (min-width: 1025px) {
@@ -265,11 +330,11 @@ export default function Header() {
           .hamburger {
             display: none !important;
           }
-          .header-mobile-user {
-            display: none !important;
-          }
           .header-right {
             display: flex !important;
+          }
+          .mobile-menu-overlay {
+            display: none !important;
           }
         }
       `}</style>

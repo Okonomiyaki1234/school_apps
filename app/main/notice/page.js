@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import Footer from "@/components/Footer";
 
 // role取得用
 async function getUserRole(userId) {
@@ -260,6 +261,7 @@ export default function NoticePage() {
           </div>
         )}
       </div>
+      <Footer />
     </>
   );
 }

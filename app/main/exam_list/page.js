@@ -1,12 +1,11 @@
 
-
-
 "use client";
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import Footer from "@/components/Footer";
 const GradeFilter = dynamic(() => import('./GradeFilter.js'), { ssr: false });
 const ClassFilter = dynamic(() => import('./ClassFilter.js'), { ssr: false });
 
@@ -134,6 +133,7 @@ export default function ExamListPage() {
         }
       `}</style>
       </main>
+      <Footer />
     </>
   );
 }

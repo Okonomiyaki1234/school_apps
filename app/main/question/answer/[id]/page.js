@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { supabase } from '../../../../../lib/supabase';
+import Footer from "@/components/Footer";
 import styles from '../../QuestionPage.module.css';
 
 const AnswerNewPage = ({ params }) => {
@@ -159,6 +160,7 @@ const AnswerNewPage = ({ params }) => {
         </form>
         {message && <div style={{marginTop:'20px',padding:'12px',background:'#e3f2fd',color:'#1976d2',borderRadius:'6px',textAlign:'center',fontWeight:'bold'}}>{message}</div>}
       </div>
+      <Footer />
     </div>
   );
 };
