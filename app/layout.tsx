@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "淑徳中学・高等学校ポータルサイト",
-  description: "淑徳中学・高等学校の生徒向けポータルサイト",
+  title: "2026淑徳高校3年生ポータルサイト",
+  description: "ポータルサイト",
 };
 
 export default function RootLayout({
