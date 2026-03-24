@@ -102,12 +102,12 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</Link>
-									<Link href="/main/tutorial" style={{ textDecoration: "none" }}>
+									<Link href="/main/clubs" style={{ textDecoration: "none" }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
-											<img src="https://placehold.jp/120x80.png" alt="チュートリアル" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<img src="https://placehold.jp/120x80.png" alt="部活・委員会" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>チュートリアル</div>
-												<div style={{ fontSize: 15, color: '#444' }}>チュートリアルを確認できます</div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>部活・委員会</div>
+												<div style={{ fontSize: 15, color: '#444' }}>部活・委員会の情報を確認できます</div>
 											</div>
 										</div>
 									</Link>
@@ -117,6 +117,15 @@ export default function SchoolHome() {
 											<div>
 												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>ツール</div>
 												<div style={{ fontSize: 15, color: '#444' }}>便利なツールが集合しています</div>
+											</div>
+										</div>
+									</Link>
+									<Link href="/main/tutorial" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="チュートリアル" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>チュートリアル</div>
+												<div style={{ fontSize: 15, color: '#444' }}>チュートリアルを確認できます</div>
 											</div>
 										</div>
 									</Link>

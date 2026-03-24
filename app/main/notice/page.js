@@ -20,6 +20,7 @@ export default function NoticePage() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
   const [userRoles, setUserRoles] = useState({});
+  const [userNames, setUserNames] = useState({});
   const [search, setSearch] = useState("");
 
   // notice一覧取得
@@ -38,16 +39,21 @@ export default function NoticePage() {
         return;
       }
       setNotices(data || []);
-      // created_byのroleを一括取得
+      // created_byのrole・nameを一括取得
       const userIds = Array.from(new Set((data || []).map(n => n.created_by).filter(Boolean)));
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id,role")
+          .select("id,role,name")
           .in("id", userIds);
         const roleMap = {};
-        (profiles || []).forEach(p => { roleMap[p.id] = p.role; });
+        const nameMap = {};
+        (profiles || []).forEach(p => {
+          roleMap[p.id] = p.role;
+          nameMap[p.id] = p.name || "(名無し)";
+        });
         setUserRoles(roleMap);
+        setUserNames(nameMap);
       }
       setLoading(false);
     })();
@@ -104,16 +110,21 @@ export default function NoticePage() {
         .select("*")
         .order("created_at", { ascending: false });
       setNotices(data || []);
-      // created_byのrole再取得
+      // created_byのrole・name再取得
       const userIds = Array.from(new Set((data || []).map(n => n.created_by).filter(Boolean)));
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id,role")
+          .select("id,role,name")
           .in("id", userIds);
         const roleMap = {};
-        (profiles || []).forEach(p => { roleMap[p.id] = p.role; });
+        const nameMap = {};
+        (profiles || []).forEach(p => {
+          roleMap[p.id] = p.role;
+          nameMap[p.id] = p.name || "(名無し)";
+        });
         setUserRoles(roleMap);
+        setUserNames(nameMap);
       }
     } catch (err) {
       setError(err.message);
@@ -270,8 +281,9 @@ export default function NoticePage() {
                 return <div>お知らせはありません</div>;
               }
               return filtered.map(notice => {
-                let roleLabel = "";
                 const role = userRoles[notice.created_by];
+                const name = userNames[notice.created_by] || "(名無し)";
+                let roleLabel = "";
                 if (role === "council") roleLabel = "生徒会";
                 else if (role === "admin") roleLabel = "教員";
                 else if (role === "operator") roleLabel = "運営";
@@ -312,7 +324,7 @@ export default function NoticePage() {
                       </div>
                     )}
                     <div style={{ fontSize: 13, color: "#888" }}>
-                      投稿日: {new Date(notice.created_at).toLocaleString()} {roleLabel && `| 投稿者: ${roleLabel}`}
+                      投稿日: {new Date(notice.created_at).toLocaleString()} | 投稿者: {name}{roleLabel ? `（${roleLabel}）` : ""}
                     </div>
                   </div>
                 );

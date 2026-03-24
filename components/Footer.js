@@ -25,8 +25,8 @@ export default function Footer() {
     >
       <div style={{ marginBottom: 12 }}>
         {/* 外部リンク例 */}
-        <a href="https://www.example.com" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
-          外部サイト
+        <a href="https://shukutoku.ed.jp/" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+          学校公式ホームページ
         </a>
         <Link href="/terms" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           利用規約
