@@ -1,12 +1,10 @@
 "use client";
 import Calendar from "@/components/Calendar";
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 import Footer from "@/components/Footer";
 
 export default function CalendarPage() {
   return (
     <>
-      <HeaderSwitcher />
       <div style={{
         maxWidth: 800,
         margin: "40px auto",

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 import { Achievement } from "@/types/achievement";
 
@@ -20,6 +20,8 @@ export default function AchievementPage() {
   const [filterLevel, setFilterLevel] = useState<string>("");
   const [filterObtained, setFilterObtained] = useState<string>("");
 
+  const { user, profile: authProfile, loading: authLoading } = useAuth() as any;
+
   useEffect(() => {
     const fetchAchievements = async () => {
       const { data, error } = await supabase
@@ -32,20 +34,12 @@ export default function AchievementPage() {
   }, []);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("achievement_list")
-          .eq("id", session.user.id)
-          .single();
-        if (!error && data) setProfile(data);
-      }
-      setLoading(false);
-    };
-    fetchProfile();
-  }, []);
+    if (authLoading) return;
+    if (authProfile) {
+      setProfile({ achievement_list: authProfile.achievement_list });
+    }
+    setLoading(false);
+  }, [authProfile, authLoading]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -69,7 +63,6 @@ export default function AchievementPage() {
 
   return (
     <div>
-      <HeaderSwitcher />
       <div style={{ height: 64 }} />
       <h1 style={{
         fontSize: "2.4rem",

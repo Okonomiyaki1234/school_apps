@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 
 
@@ -29,41 +29,30 @@ export default function TaskAdminPage() {
   const [selectedClasses, setSelectedClasses] = useState([]);
   const router = useRouter();
 
+  const { user: authUser, profile: authProfile, loading: authLoading } = useAuth();
+
   useEffect(() => {
-    let isMounted = true;
+    if (authLoading) return;
+    setUser(authUser);
+    const adminOrOp = authProfile?.role === 'admin' || authProfile?.role === 'operator';
+    setIsAdmin(adminOrOp);
+    if (authProfile?.name) {
+      setAddForm(f => ({ ...f, teacher: authProfile.name }));
+    }
+    if (!adminOrOp) {
+      router.replace('/main/home');
+      return;
+    }
     (async () => {
-      // 認証ユーザー取得
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!isMounted) return;
-      setUser(user);
-      let adminOrOp = false;
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role, name')
-          .eq('id', user.id)
-          .single();
-        adminOrOp = profile?.role === 'admin' || profile?.role === 'operator';
-        // 追加フォームのteacherデフォルト
-        setAddForm(f => ({ ...f, teacher: profile?.name || '' }));
-      }
-      setIsAdmin(adminOrOp);
-      if (!adminOrOp) {
-        router.replace('/main/home');
-        return;
-      }
-      // データ取得
       const { data, error } = await supabase
         .from('task')
         .select('*')
         .order('created_at', { ascending: false });
-      if (!isMounted) return;
       if (error) setError(error.message);
       else setTasks(data || []);
       setLoading(false);
     })();
-    return () => { isMounted = false; };
-  }, [router]);
+  }, [authUser, authProfile, authLoading, router]);
 
   if (loading) return <div style={{padding:'2rem',textAlign:'center'}}>読み込み中...</div>;
   if (error) return <div style={{padding:'2rem',color:'#b00'}}>データ取得エラー: {error}</div>;
@@ -193,7 +182,6 @@ export default function TaskAdminPage() {
 
   return (
     <>
-      <HeaderSwitcher />
       <div style={{ height: 32 }} />
       <div style={{maxWidth:900,margin:'40px auto',background:'#fff',borderRadius:8,boxShadow:'0 2px 8px #eee',padding:24}}>
       <div style={{marginBottom:16}}>

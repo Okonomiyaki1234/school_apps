@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 
@@ -14,26 +14,24 @@ const categories = [
 ];
 
 export default function CafeteriaPage() {
+	const { user } = useAuth();
 	const [menuData, setMenuData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
-    const [userId, setUserId] = useState(null);
 
 	useEffect(() => {
 		let isMounted = true;
         // メニュー利用称号判定
-        (async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user?.id) {
-                setUserId(session.user.id);
+        if (user?.id) {
+            (async () => {
                 try {
                     const { handleUseAchievement } = await import("@/lib/achievement");
-                    await handleUseAchievement(session.user.id, "menu");
+                    await handleUseAchievement(user.id, "menu");
                 } catch (e) {
                     console.error("メニュー利用称号判定失敗", e);
                 }
-            }
-        })();
+            })();
+        }
 		(async () => {
 			const { data, error } = await supabase
 				.from('cafeteria_menu')
@@ -45,11 +43,10 @@ export default function CafeteriaPage() {
 			setLoading(false);
 		})();
 		return () => { isMounted = false; };
-	}, []);
+	}, [user]);
 
 	return (
 		<>
-			<HeaderSwitcher />
 			<main style={{ padding: "2rem", paddingTop: "3.5rem" }}>
 				<h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "2rem", textAlign: "center" }}>食堂メニュー</h1>
 				{loading ? (

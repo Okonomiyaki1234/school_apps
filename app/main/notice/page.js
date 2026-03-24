@@ -2,49 +2,22 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
-
-// role取得用
-async function getUserRole(userId) {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .single();
-  return error ? null : data?.role;
-}
 
 export default function NoticePage() {
   const router = useRouter();
-  const [session, setSession] = useState(null);
-  const [role, setRole] = useState("");
+  const { user, profile: authProfile, loading: authLoading } = useAuth();
+  const role = authProfile?.role || "";
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ title: "", description: "", image: null });
-  const [imagePreview, setImagePreview] = useState(null);
+  const [form, setForm] = useState({ title: "", description: "", files: [] });
+  const [filePreviews, setFilePreviews] = useState([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
-  // created_byのroleキャッシュ
   const [userRoles, setUserRoles] = useState({});
-  // 検索語
   const [search, setSearch] = useState("");
-
-  // セッション・role取得
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(session);
-      if (session?.user) {
-        const r = await getUserRole(session.user.id);
-        setRole(r);
-      }
-    })();
-    return () => { mounted = false; };
-  }, []);
 
   // notice一覧取得
   useEffect(() => {
@@ -86,22 +59,27 @@ export default function NoticePage() {
     e.preventDefault();
     setError("");
     setUploading(true);
-    let imageUrl = null;
     try {
-      // 画像アップロード
-      if (form.image) {
-        const file = form.image;
-        const ext = file.name.split(".").pop();
-        const fileName = `${session.user.id}_${Date.now()}.${ext}`;
-        const { data, error: uploadError } = await supabase.storage
-          .from("notice-images")
-          .upload(fileName, file, { upsert: false });
-        if (uploadError) throw new Error("画像アップロード失敗: " + uploadError.message);
-        // URL取得
-        const { data: urlData } = supabase.storage
-          .from("notice-images")
-          .getPublicUrl(fileName);
-        imageUrl = urlData?.publicUrl || null;
+      // ファイルアップロード
+      let uploadedFiles = [];
+      if (form.files && form.files.length > 0) {
+        for (let i = 0; i < form.files.length; i++) {
+          const file = form.files[i];
+          const ext = file.name.split(".").pop();
+          const fileName = `${user.id}_${Date.now()}_${i}.${ext}`;
+          const { data, error: uploadError } = await supabase.storage
+            .from("notice-files")
+            .upload(fileName, file, { upsert: false });
+          if (uploadError) throw new Error("ファイルアップロード失敗: " + uploadError.message);
+          const { data: urlData } = supabase.storage
+            .from("notice-files")
+            .getPublicUrl(fileName);
+          uploadedFiles.push({
+            url: urlData?.publicUrl || null,
+            name: file.name,
+            type: file.type
+          });
+        }
       }
       // notice insert (created_byはsession.user.id)
       const { error: insertError } = await supabase
@@ -109,12 +87,12 @@ export default function NoticePage() {
         .insert({
           title: form.title,
           description: form.description,
-          image_url: imageUrl,
-          created_by: session.user.id,
+          files: uploadedFiles.length > 0 ? uploadedFiles : null,
+          created_by: user.id,
         });
       if (insertError) throw new Error("投稿失敗: " + insertError.message);
-      setForm({ title: "", description: "", image: null });
-        setImagePreview(null);
+      setForm({ title: "", description: "", files: [] });
+      setFilePreviews([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
       // 再取得
       const { data } = await supabase
@@ -142,7 +120,6 @@ export default function NoticePage() {
 
   return (
     <>
-      <HeaderSwitcher />
       <div style={{ maxWidth: 700, margin: "40px auto", padding: 24 }}>
         <h1 style={{ fontSize: 28, marginBottom: 24 }}>お知らせ</h1>
         {/* 検索フォーム */}
@@ -158,7 +135,6 @@ export default function NoticePage() {
         {/* 投稿フォーム（権限者のみ） */}
         {canPost && (
           <form onSubmit={handleSubmit} style={{ marginBottom: 32, background: "#f7faff", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px #eee" }}>
-            {/* ...existing code... */}
             <div style={{ marginBottom: 12 }}>
               <input
                 type="text"
@@ -182,25 +158,38 @@ export default function NoticePage() {
             <div style={{ marginBottom: 12 }}>
               <input
                 type="file"
-                accept="image/*"
+                multiple
                 ref={fileInputRef}
                 onChange={e => {
-                  const file = e.target.files[0];
-                  setForm(f => ({ ...f, image: file }));
-                  if (file) {
-                    const url = URL.createObjectURL(file);
-                    setImagePreview(url);
-                  } else {
-                    setImagePreview(null);
-                  }
+                  const files = Array.from(e.target.files).slice(0, 10);
+                  setForm(f => ({ ...f, files }));
+                  // プレビュー生成
+                  const previews = files.map(file => {
+                    let url = null;
+                    if (file.type.startsWith("image/")) {
+                      url = URL.createObjectURL(file);
+                    }
+                    return { url, name: file.name, type: file.type };
+                  });
+                  setFilePreviews(previews);
                 }}
                 style={{ fontSize: 15 }}
               />
-              {form.image && imagePreview && (
+              {filePreviews.length > 0 && (
                 <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>画像プレビュー:</div>
-                  <img src={imagePreview} alt="プレビュー" style={{ maxWidth: 240, maxHeight: 160, borderRadius: 8, boxShadow: '0 2px 8px #eee' }} />
-                  <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{form.image.name}</div>
+                  <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>ファイルプレビュー:</div>
+                  <ul style={{ paddingLeft: 18 }}>
+                    {filePreviews.map((f, idx) => (
+                      <li key={idx} style={{ marginBottom: 6 }}>
+                        {f.type.startsWith("image/") && f.url ? (
+                          <img src={f.url} alt={f.name} style={{ maxWidth: 120, maxHeight: 80, borderRadius: 6, boxShadow: '0 2px 8px #eee', marginRight: 8, verticalAlign: 'middle' }} />
+                        ) : (
+                          <span style={{ marginRight: 8, fontSize: 15, color: '#888' }}>📄</span>
+                        )}
+                        <span style={{ fontSize: 13 }}>{f.name}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>
@@ -248,8 +237,21 @@ export default function NoticePage() {
                         </span>
                       ))}
                     </div>
-                    {notice.image_url && (
-                      <img src={notice.image_url} alt="お知らせ画像" style={{ maxWidth: "100%", borderRadius: 8, marginBottom: 8 }} />
+                    {/* files配列の表示 */}
+                    {Array.isArray(notice.files) && notice.files.length > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        {notice.files.map((f, idx) => (
+                          <div key={idx} style={{ marginBottom: 6 }}>
+                            {f.type && f.type.startsWith("image/") ? (
+                              <img src={f.url} alt={f.name} style={{ maxWidth: 240, maxHeight: 160, borderRadius: 8, boxShadow: '0 2px 8px #eee', marginBottom: 2 }} />
+                            ) : (
+                              <a href={f.url} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline', fontSize: 15 }}>
+                                {f.name} をダウンロード
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     )}
                     <div style={{ fontSize: 13, color: "#888" }}>
                       投稿日: {new Date(notice.created_at).toLocaleString()} {roleLabel && `| 投稿者: ${roleLabel}`}

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 import { iconList } from "@/lib/iconList";
 
@@ -17,7 +17,7 @@ const GRADE_OPTIONS = [
 ];
 
 export default function MyPage() {
-	const [user, setUser] = useState(null);
+	const { user, profile: authProfile, loading: authLoading } = useAuth();
 	const [profile, setProfile] = useState({
 		name: "",
 		grade: "",
@@ -35,33 +35,23 @@ export default function MyPage() {
 	const [editMode, setEditMode] = useState(false);
 	const [message, setMessage] = useState("");
 
-	// 認証ユーザー取得
+	// AuthContext のプロフィールを反映
 	useEffect(() => {
-		let isMounted = true;
-		const fetchProfile = async () => {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (!isMounted) return;
-			setUser(session?.user ?? null);
-			if (session?.user) {
-				const { data, error } = await supabase
-					.from("profiles")
-					.select("name, grade, class, description, achievement, achievement_list, icon")
-					.eq("id", session.user.id)
-					.single();
-				if (data) {
-					setProfile(prev => ({
-						...prev,
-						...data,
-						achievement_list: Array.isArray(data.achievement_list) ? data.achievement_list : DEFAULT_ACHIEVEMENT_LIST,
-						icon: data.icon || DEFAULT_ICON
-					}));
-				}
-			}
-			setLoading(false);
-		};
-		fetchProfile();
-		return () => { isMounted = false; };
-	}, []);
+		if (authLoading) return;
+		if (authProfile) {
+			setProfile(prev => ({
+				...prev,
+				name: authProfile.name || "",
+				grade: authProfile.grade || "",
+				class: authProfile.class || "",
+				description: authProfile.description || "",
+				achievement: Array.isArray(authProfile.achievement) ? authProfile.achievement : [],
+				achievement_list: Array.isArray(authProfile.achievement_list) ? authProfile.achievement_list : DEFAULT_ACHIEVEMENT_LIST,
+				icon: authProfile.icon || DEFAULT_ICON
+			}));
+		}
+		setLoading(false);
+	}, [authProfile, authLoading]);
 
 	// 記号禁止バリデーション
 	const symbolRegex = /[!-/:-@\[-`{-~]/;
@@ -140,7 +130,6 @@ export default function MyPage() {
 
 	return (
 		<>
-			<HeaderSwitcher />
 			<div
 				style={{
 					margin: "56px auto 0",

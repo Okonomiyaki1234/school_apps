@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState, use } from "react";
-import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabase";
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
 import Footer from "@/components/Footer";
 import { iconList } from "@/lib/iconList";
 
@@ -55,7 +53,6 @@ export default function OtherUserPage({ params }) {
 
 	return (
 		<>
-			<HeaderSwitcher />
 			<div
 				style={{
 					margin: "56px auto 0",

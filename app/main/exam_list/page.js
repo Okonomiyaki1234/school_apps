@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 const GradeFilter = dynamic(() => import('./GradeFilter.js'), { ssr: false });
 const ClassFilter = dynamic(() => import('./ClassFilter.js'), { ssr: false });
@@ -21,31 +21,19 @@ export default function ExamListPage() {
     '高校1年生', '高校2年生', '高校3年生',
   ];
 
-  useEffect(() => {
-    (async () => {
-      // 認証ユーザー取得
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      let admin = false;
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-        admin = profile?.role === 'admin';
-      }
-      setIsAdmin(admin);
+  const { profile: authProfile, loading: authLoading } = useAuth();
 
-      // 全件取得
+  useEffect(() => {
+    if (authLoading) return;
+    setIsAdmin(authProfile?.role === 'admin');
+    (async () => {
       const { data, error } = await supabase
         .from('exam')
         .select('*');
       if (error) setError(error.message);
       else setExams(data || []);
     })();
-  }, []);
+  }, [authProfile, authLoading]);
 
   // クラス一覧を取得
   const classOptions = Array.from(new Set(exams.map(e => e.class))).filter(Boolean);
@@ -71,7 +59,6 @@ export default function ExamListPage() {
 
   return (
     <>
-      <HeaderSwitcher />
       <div style={{ height: 32 }} />
       <main style={{
         maxWidth: 900,

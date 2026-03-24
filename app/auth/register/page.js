@@ -1,6 +1,7 @@
 
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
@@ -33,6 +34,7 @@ export default function RegisterPage() {
 					メール内のリンクから認証を完了してください。
 				</div>
 			) : (
+				<>
 				<form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16, width: 320 }}>
 					<input
 						type="email"
@@ -59,13 +61,29 @@ export default function RegisterPage() {
 					</button>
 					{error && <div style={{ color: "#d00", fontSize: 15 }}>{error}</div>}
 				</form>
+				{/* Google新規登録ボタン */}
+				<button
+					onClick={async () => {
+						setLoading(true);
+						setError("");
+						const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+						if (error) setError(error.message);
+						setLoading(false);
+					}}
+					disabled={loading}
+					style={{ marginTop: 24, fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#fff", color: "#1976d2", border: "1px solid #1976d2", cursor: "pointer", boxShadow: "0 2px 8px #eee", display: "flex", alignItems: "center", gap: 8 }}
+				>
+					<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" style={{ width: 24, height: 24 }} />
+					Googleで新規登録/ログイン
+				</button>
+				</>
 			)}
 			{/* app/page.js（ログインページ）へ戻るボタン */}
-			<a href="/" style={{ marginTop: 32, textDecoration: "none" }}>
-				<button style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
+			<Link href="/" style={{ marginTop: 32, textDecoration: "none" }}>
+				<button type="button" style={{ fontSize: 18, padding: "16px 32px", borderRadius: 8, background: "#1976d2", color: "#fff", border: "none", cursor: "pointer", boxShadow: "0 2px 8px #eee" }}>
 					ログインページへ戻る
 				</button>
-			</a>
+			</Link>
 		</div>
 	);
 }

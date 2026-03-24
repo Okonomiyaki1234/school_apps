@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 import HeaderDefault from "./HeaderDefault";
 import HeaderDark from "./HeaderDark";
 import HeaderCool from "./HeaderCool";
@@ -15,57 +15,38 @@ const HEADER_MAP = {
   natural: HeaderNatural,
 };
 
-export default function HeaderSwitcher() {
-  const [themeId, setThemeId] = useState("default");
-  const [availableThemes, setAvailableThemes] = useState([]);
-  const [loadingThemes, setLoadingThemes] = useState(true);
+const ALL_THEMES = ["default", "dark", "cool", "cute", "natural"];
+const THEME_LABELS = {
+  default: "ライト",
+  dark: "ダーク",
+  cool: "クール",
+  cute: "キュート",
+  natural: "ナチュラル"
+};
 
-  // 初期化時とthemeId変更時にbodyへテーマクラスを付与
+export default function HeaderSwitcher() {
+  const { user, profile, loading } = useAuth();
+  const [themeId, setThemeId] = useState("default");
+  const [availableThemes, setAvailableThemes] = useState(["default"]);
+
+  // AuthContext のプロフィールからテーマ情報を取得（追加の通信なし）
   useEffect(() => {
-    // ユーザーのテーマ取得
-    const fetchThemes = async () => {
-      setLoadingThemes(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      let themes = ["default"];
-      if (session?.user) {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("themes")
-          .eq("id", session.user.id)
-          .single();
-        if (!error && data && Array.isArray(data.themes)) {
-          themes = data.themes.length > 0 ? data.themes : ["default"];
-        }
-        // ログイン状態: localStorageはユーザーのテーマに合わせる
-        const stored = localStorage.getItem("themeId");
-        const id = stored && HEADER_MAP[stored] ? stored : themes[0] || "default";
-        setThemeId(id);
-        document.body.classList.remove(
-          "theme-default",
-          "theme-dark",
-          "theme-cool",
-          "theme-cute",
-          "theme-natural"
-        );
-        document.body.classList.add(`theme-${id}`);
-      } else {
-        // ログアウト状態: localStorageのthemeIdを強制的に"default"へ
-        localStorage.setItem("themeId", "default");
-        setThemeId("default");
-        document.body.classList.remove(
-          "theme-default",
-          "theme-dark",
-          "theme-cool",
-          "theme-cute",
-          "theme-natural"
-        );
-        document.body.classList.add("theme-default");
-      }
+    if (loading) return;
+
+    if (user && profile) {
+      const themes = Array.isArray(profile.themes) && profile.themes.length > 0
+        ? profile.themes
+        : ["default"];
       setAvailableThemes(themes);
-      setLoadingThemes(false);
-    };
-    fetchThemes();
-  }, []);
+      const stored = localStorage.getItem("themeId");
+      const id = stored && HEADER_MAP[stored] ? stored : themes[0] || "default";
+      setThemeId(id);
+    } else {
+      localStorage.setItem("themeId", "default");
+      setThemeId("default");
+      setAvailableThemes(["default"]);
+    }
+  }, [user, profile, loading]);
 
   useEffect(() => {
     document.body.classList.remove(
@@ -85,18 +66,6 @@ export default function HeaderSwitcher() {
   };
 
   const HeaderComponent = HEADER_MAP[themeId] || HeaderDefault;
-
-  // テーマ一覧
-  const THEME_LABELS = {
-    default: "ライト",
-    dark: "ダーク",
-    cool: "クール",
-    cute: "キュート",
-    natural: "ナチュラル"
-  };
-
-  // 全テーマ
-  const ALL_THEMES = ["default", "dark", "cool", "cute", "natural"];
 
   return (
     <>
@@ -132,7 +101,7 @@ export default function HeaderSwitcher() {
             outline: "none",
             boxShadow: "0 1px 4px #1976d211"
           }}
-          disabled={loadingThemes}
+          disabled={loading}
         >
           {ALL_THEMES.map(theme => (
             <option

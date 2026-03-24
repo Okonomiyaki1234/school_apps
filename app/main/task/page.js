@@ -1,15 +1,15 @@
 
 "use client";
 
-
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
-import HeaderSwitcher from "@/components/Header/HeaderSwitcher";
+import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 import Link from 'next/link';
 
 
 export default function TaskListPage() {
+  const { user, profile: authProfile, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,48 +18,33 @@ export default function TaskListPage() {
   const [isAdminOrOperator, setIsAdminOrOperator] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
+    const grade = authProfile?.grade || "";
+    const className = authProfile?.class || "";
+    setUserGrade(grade);
+    setUserClass(className);
+    const isAdminOp = authProfile?.role === 'admin' || authProfile?.role === 'operator';
+    setIsAdminOrOperator(isAdminOp);
+
     (async () => {
       setLoading(true);
-      // ユーザーの学年・クラス・権限取得
-      const { data: { session } } = await supabase.auth.getSession();
-      let grade = "";
-      let className = "";
-      let isAdminOp = false;
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("grade, class, role")
-          .eq("id", session.user.id)
-          .single();
-        grade = profile?.grade || "";
-        className = profile?.class || "";
-        setUserGrade(grade);
-        setUserClass(className);
-        if (profile?.role === 'admin' || profile?.role === 'operator') {
-          isAdminOp = true;
-        }
-      }
-      setIsAdminOrOperator(isAdminOp);
-      // task取得
       const { data, error } = await supabase
         .from('task')
         .select('*');
       if (error) setError(error.message);
       else {
-        // ユーザーの学年・クラスに合致するものだけ
         const filtered = (data || []).filter(task => task.grade === grade && task.class === className);
         setTasks(filtered);
       }
       setLoading(false);
     })();
-  }, []);
+  }, [authProfile, authLoading]);
 
 	if (loading) return <div style={{padding:'2rem'}}>読み込み中...</div>;
 	if (error) return <div style={{padding:'2rem',color:'#b00'}}>データ取得エラー: {error}</div>;
 
 	return (
 		<>
-			<HeaderSwitcher />
 			<div style={{ height: 32 }} />
 			<main style={{ maxWidth: 900, margin: '0 auto', padding: '2rem 1rem' }}>
 				<h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>課題一覧</h2>

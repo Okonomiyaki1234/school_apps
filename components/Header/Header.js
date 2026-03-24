@@ -1,87 +1,36 @@
 "use client";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
-
-export default function Header() {
-    const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+export default function Header({
+  bgColor = "#1976d2",
+  textColor = "#fff",
+  accentColor = "#1976d2",
+  shadowColor = "#0002",
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchProfile = async (user) => {
-      if (!user) {
-        setUserProfile(null);
-        return;
-      }
-      // プロフィール取得（profilesテーブルにname, roleがある前提）
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("name, role")
-        .eq("id", user.id)
-        .single();
-      if (!error) {
-        setUserProfile(data);
-      } else {
-        setUserProfile(null);
-      }
-    };
-
-    const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!isMounted) return;
-      setUser(session?.user ?? null);
-      await fetchProfile(session?.user ?? null);
-      setLoading(false);
-    };
-
-    initializeAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!isMounted) return;
-      setUser(session?.user ?? null);
-      await fetchProfile(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    // ローディング完了後に未ログインならリダイレクト
-    if (!loading && !user) {
-      // auth/registerページではリダイレクトしない
-      if (pathname !== "/" && pathname !== "/auth/register") {
-        router.replace("/");
-      }
-    }
-  }, [loading, user, pathname, router]);
+  const { user, profile, loading, signOut, getRoleLabel } = useAuth();
 
   const handleLogout = async () => {
     if (!window.confirm("本当にログアウトしますか？")) return;
     setLoggingOut(true);
-    await supabase.auth.signOut();
+    await signOut();
     setLoggingOut(false);
-    router.replace("/"); // ログインページへ自動遷移
   };
 
-  // ページトップへスクロールする関数
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const userDisplay = loading
+    ? "認証確認中..."
+    : user && profile
+      ? `ログイン中: ${profile.name}（${getRoleLabel(profile.role)}）`
+      : user
+        ? "ユーザー情報取得中..."
+        : "ログインしていません";
 
   return (
     <header
@@ -91,14 +40,14 @@ export default function Header() {
         left: 0,
         width: "100vw",
         height: 56,
-        background: "#1976d2",
-        color: "#fff",
+        background: bgColor,
+        color: textColor,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 32px",
         zIndex: 2000,
-        boxShadow: "0 2px 8px #0002"
+        boxShadow: `0 2px 8px ${shadowColor}`
       }}
     >
       {/* ハンバーガーメニュー（モバイル） */}
@@ -109,7 +58,7 @@ export default function Header() {
             style={{
               background: "none",
               border: "none",
-              color: "#fff",
+              color: textColor,
               fontSize: 28,
               cursor: "pointer",
               marginRight: 12
@@ -122,9 +71,9 @@ export default function Header() {
         {/* PC用ナビゲーション */}
         <nav className="header-nav" style={{ gap: 0 }}>
           <Link
-            href="/"
+            href="/main/home"
             style={{
-              color: "#fff",
+              color: textColor,
               textDecoration: "none",
               fontWeight: 600,
               fontSize: 18,
@@ -138,8 +87,8 @@ export default function Header() {
           <button
             onClick={scrollToTop}
             style={{
-              background: "#1976d2",
-              color: "#fff",
+              background: bgColor,
+              color: textColor,
               border: "none",
               borderRadius: 6,
               padding: "8px 16px",
@@ -153,29 +102,15 @@ export default function Header() {
       </div>
       {/* PC用ユーザー情報・ログアウト */}
       <div className="header-right" style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <span style={{ fontSize: 14, color: "#fff", opacity: 0.9 }}>
-          {loading
-            ? "認証確認中..."
-            : user && userProfile
-              ? `ログイン中: ${userProfile.name}（${(() => {
-                  switch (userProfile.role) {
-                    case "student": return "生徒";
-                    case "council": return "生徒会";
-                    case "admin": return "教員";
-                    case "operator": return "運営";
-                    default: return userProfile.role;
-                  }
-                })()}）`
-              : user
-                ? "ユーザー情報取得中..."
-                : "ログインしていません"}
+        <span style={{ fontSize: 14, color: textColor, opacity: 0.9 }}>
+          {userDisplay}
         </span>
         <button
           onClick={handleLogout}
           disabled={loggingOut || loading}
           style={{
             background: "#fff",
-            color: "#1976d2",
+            color: accentColor,
             border: "none",
             borderRadius: 6,
             padding: "8px 20px",
@@ -198,7 +133,7 @@ export default function Header() {
               style={{
                 background: "none",
                 border: "none",
-                color: "#1976d2",
+                color: accentColor,
                 fontSize: 32,
                 position: "absolute",
                 top: 12,
@@ -211,7 +146,7 @@ export default function Header() {
               <Link
                 href="/main/home"
                 style={{
-                  color: "#1976d2",
+                  color: accentColor,
                   background: "#fff",
                   textDecoration: "none",
                   fontWeight: 600,
@@ -229,7 +164,7 @@ export default function Header() {
                 onClick={() => { scrollToTop(); setMenuOpen(false); }}
                 style={{
                   background: "#fff",
-                  color: "#1976d2",
+                  color: accentColor,
                   border: "none",
                   borderRadius: 8,
                   padding: "12px 32px",
@@ -245,8 +180,8 @@ export default function Header() {
                 onClick={() => { handleLogout(); setMenuOpen(false); }}
                 disabled={loggingOut || loading}
                 style={{
-                  background: "#1976d2",
-                  color: "#fff",
+                  background: bgColor,
+                  color: textColor,
                   border: "none",
                   borderRadius: 8,
                   padding: "12px 32px",
@@ -258,22 +193,8 @@ export default function Header() {
                   textAlign: "center"
                 }}
               >{loggingOut ? "ログアウト中..." : "ログアウト"}</button>
-              <span style={{ fontSize: 14, color: "#1976d2", opacity: 0.9, margin: "16px 0" }}>
-                {loading
-                  ? "認証確認中..."
-                  : user && userProfile
-                    ? `ログイン中: ${userProfile.name}（${(() => {
-                        switch (userProfile.role) {
-                          case "student": return "生徒";
-                          case "council": return "生徒会";
-                          case "admin": return "教員";
-                          case "operator": return "運営";
-                          default: return userProfile.role;
-                        }
-                      })()}）`
-                    : user
-                      ? "ユーザー情報取得中..."
-                      : "ログインしていません"}
+              <span style={{ fontSize: 14, color: accentColor, opacity: 0.9, margin: "16px 0" }}>
+                {userDisplay}
               </span>
             </nav>
           </div>
@@ -307,12 +228,12 @@ export default function Header() {
           .mobile-menu {
             position: relative;
             background: #fff;
-            color: #1976d2;
+            color: ${accentColor};
             border-radius: 16px;
             margin-top: 60px;
             min-width: 240px;
             min-height: 220px;
-            box-shadow: 0 4px 24px #0002;
+            box-shadow: 0 4px 24px ${shadowColor};
             padding: 32px 0 24px 0;
             display: flex;
             flex-direction: column;

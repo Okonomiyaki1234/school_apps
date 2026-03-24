@@ -1,14 +1,15 @@
 
 "use client";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
-import { useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Footer() {
-  const handleLogout = useCallback(async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  }, []);
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    if (!window.confirm("強制ログアウトしますか？")) return;
+    await signOut();
+  };
   return (
     <footer
       style={{
@@ -33,6 +34,9 @@ export default function Footer() {
         <Link href="/privacy" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           プライバシーポリシー
         </Link>
+        <a href="https://forms.gle/Us1XA89gTS3fpuBn6" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+          フィードバック
+        </a>
       </div>
       <div style={{ fontSize: 13, color: "#888" }}>
         &copy; {new Date().getFullYear()} 淑徳中学・高等学校ポータル
