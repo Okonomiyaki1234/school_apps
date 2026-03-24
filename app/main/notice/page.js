@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
+import TagFilter from "@/components/TagFilter";
 
 export default function NoticePage() {
   const router = useRouter();
@@ -12,7 +13,9 @@ export default function NoticePage() {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ title: "", description: "", files: [] });
+  const [form, setForm] = useState({ title: "", description: "", files: [], tags: [] });
+    // タグ選択（一覧フィルタ用）
+    const [selectedTags, setSelectedTags] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
@@ -88,10 +91,11 @@ export default function NoticePage() {
           title: form.title,
           description: form.description,
           files: uploadedFiles.length > 0 ? uploadedFiles : null,
+          tags: form.tags,
           created_by: user.id,
         });
       if (insertError) throw new Error("投稿失敗: " + insertError.message);
-      setForm({ title: "", description: "", files: [] });
+      setForm({ title: "", description: "", files: [], tags: [] });
       setFilePreviews([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
       // 再取得
@@ -155,38 +159,73 @@ export default function NoticePage() {
                 style={{ width: "100%", padding: 10, fontSize: 16, borderRadius: 6, border: "1px solid #ccc" }}
               />
             </div>
+            {/* タグ選択 */}
             <div style={{ marginBottom: 12 }}>
-              <input
-                type="file"
-                multiple
-                ref={fileInputRef}
-                onChange={e => {
-                  const files = Array.from(e.target.files).slice(0, 10);
-                  setForm(f => ({ ...f, files }));
-                  // プレビュー生成
-                  const previews = files.map(file => {
-                    let url = null;
-                    if (file.type.startsWith("image/")) {
-                      url = URL.createObjectURL(file);
-                    }
-                    return { url, name: file.name, type: file.type };
-                  });
-                  setFilePreviews(previews);
-                }}
-                style={{ fontSize: 15 }}
-              />
-              {filePreviews.length > 0 && (
+              <div style={{ fontSize: 15, marginBottom: 4 }}>タグ（複数選択可）</div>
+              <TagFilter selectedTags={form.tags} setSelectedTags={tags => setForm(f => ({ ...f, tags }))} />
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>
+                添付ファイル（最大10件・形式自由）
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={e => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    setForm(f => {
+                      if (f.files.length >= 10) return f;
+                      // すでに同名ファイルがあれば追加しない
+                      if (f.files.some(existing => existing.name === file.name && existing.size === file.size)) return f;
+                      const newFiles = [...f.files, file];
+                      // プレビュー生成
+                      const previews = newFiles.map(file => {
+                        let url = null;
+                        if (file.type.startsWith("image/")) {
+                          url = URL.createObjectURL(file);
+                        }
+                        return { url, name: file.name, type: file.type };
+                      });
+                      setFilePreviews(previews);
+                      return { ...f, files: newFiles };
+                    });
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  style={{ fontSize: 15 }}
+                  disabled={form.files.length >= 10}
+                />
+                <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} style={{ padding: '6px 16px', borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 15 }} disabled={form.files.length >= 10}>追加</button>
+                <span style={{ fontSize: 13, color: '#888' }}>{form.files.length}/10</span>
+              </div>
+              {form.files.length > 0 && (
                 <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>ファイルプレビュー:</div>
+                  <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>ファイルリスト:</div>
                   <ul style={{ paddingLeft: 18 }}>
-                    {filePreviews.map((f, idx) => (
-                      <li key={idx} style={{ marginBottom: 6 }}>
-                        {f.type.startsWith("image/") && f.url ? (
-                          <img src={f.url} alt={f.name} style={{ maxWidth: 120, maxHeight: 80, borderRadius: 6, boxShadow: '0 2px 8px #eee', marginRight: 8, verticalAlign: 'middle' }} />
+                    {form.files.map((file, idx) => (
+                      <li key={file.name + file.size} style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {file.type && file.type.startsWith("image/") ? (
+                          <img src={filePreviews[idx]?.url} alt={file.name} style={{ maxWidth: 80, maxHeight: 60, borderRadius: 6, boxShadow: '0 2px 8px #eee', marginRight: 4, verticalAlign: 'middle' }} />
                         ) : (
-                          <span style={{ marginRight: 8, fontSize: 15, color: '#888' }}>📄</span>
+                          <span style={{ marginRight: 4, fontSize: 15, color: '#888' }}>📄</span>
                         )}
-                        <span style={{ fontSize: 13 }}>{f.name}</span>
+                        <span style={{ fontSize: 13 }}>{file.name}</span>
+                        <button type="button" onClick={() => {
+                          setForm(f => {
+                            const newFiles = f.files.filter((_, i) => i !== idx);
+                            // プレビューも更新
+                            const previews = newFiles.map(file => {
+                              let url = null;
+                              if (file.type.startsWith("image/")) {
+                                url = URL.createObjectURL(file);
+                              }
+                              return { url, name: file.name, type: file.type };
+                            });
+                            setFilePreviews(previews);
+                            return { ...f, files: newFiles };
+                          });
+                        }} style={{ marginLeft: 4, color: '#d32f2f', background: 'none', border: 'none', cursor: 'pointer', fontSize: 15 }}>削除</button>
                       </li>
                     ))}
                   </ul>
@@ -203,19 +242,30 @@ export default function NoticePage() {
             {error && <div style={{ color: "#d00", marginTop: 10 }}>{error}</div>}
           </form>
         )}
+        {/* タグフィルタ */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 15, marginBottom: 4 }}>タグで絞り込み</div>
+          <TagFilter selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+        </div>
         {/* 一覧表示 */}
         {loading ? (
           <div>読み込み中...</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {/* 検索語でフィルタ */}
+            {/* 検索語・タグでフィルタ */}
             {(() => {
-              const filtered = search.trim() === ""
-                ? notices
-                : notices.filter(n =>
-                    n.title?.toLowerCase().includes(search.toLowerCase()) ||
-                    n.description?.toLowerCase().includes(search.toLowerCase())
-                  );
+              let filtered = notices;
+              // タグフィルタ
+              if (selectedTags.length > 0) {
+                filtered = filtered.filter(n => Array.isArray(n.tags) && n.tags.some(t => selectedTags.includes(t)));
+              }
+              // 検索フィルタ
+              if (search.trim() !== "") {
+                filtered = filtered.filter(n =>
+                  n.title?.toLowerCase().includes(search.toLowerCase()) ||
+                  n.description?.toLowerCase().includes(search.toLowerCase())
+                );
+              }
               if (filtered.length === 0) {
                 return <div>お知らせはありません</div>;
               }
@@ -229,6 +279,14 @@ export default function NoticePage() {
                 return (
                   <div key={notice.id} style={{ background: "#fff", borderRadius: 10, boxShadow: "0 2px 8px #eee", padding: 18 }}>
                     <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 6 }}>{notice.title}</div>
+                    {/* タグ表示 */}
+                    {Array.isArray(notice.tags) && notice.tags.length > 0 && (
+                      <div style={{ marginBottom: 6 }}>
+                        {notice.tags.map(tag => (
+                          <span key={tag} style={{ display: 'inline-block', background: '#e3f2fd', color: '#1976d2', borderRadius: 8, padding: '2px 10px', fontSize: 13, marginRight: 6, marginBottom: 2 }}>{tag}</span>
+                        ))}
+                      </div>
+                    )}
                     <div style={{ fontSize: 15, color: "#444", marginBottom: 8 }}>
                       {notice.description?.split("\n").map((line, idx, arr) => (
                         <span key={idx}>

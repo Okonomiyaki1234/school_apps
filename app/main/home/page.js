@@ -75,15 +75,15 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</Link>
-									<Link href="/main/achievement" style={{ textDecoration: "none" }}>
-										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
-											<img src="https://placehold.jp/120x80.png" alt="称号" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
-											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>実績</div>
-												<div style={{ fontSize: 15, color: '#444' }}>称号を確認できます</div>
-											</div>
-										</div>
-									</Link>
+									   {/* <Link href="/main/achievement" style={{ textDecoration: "none" }}>
+										   <div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											   <img src="https://placehold.jp/120x80.png" alt="称号" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											   <div>
+												   <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>実績</div>
+												   <div style={{ fontSize: 15, color: '#444' }}>称号を確認できます</div>
+											   </div>
+										   </div>
+									   </Link> 称号リンクはマイページからのみアクセス可能に変更 */}
 									<Link href="/main/question" style={{ textDecoration: "none" }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="匿名質問" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
@@ -102,48 +102,21 @@ export default function SchoolHome() {
 											</div>
 										</div>
 									</Link>
-									<a href="https://studio-delta-six-29.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
-											<img src="https://placehold.jp/120x80.png" alt="アドバンス" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
-											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>淑徳アドバンス デジタルサイネージ</div>
-												<div style={{ fontSize: 15, color: '#444' }}>淑徳アドバンスのサイネージが確認できます。</div>
-											</div>
-										</div>
-									</a>
-									<Link href="/main/cafeteria" style={{ textDecoration: "none" }}>
-										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
-											<img src="https://placehold.jp/120x80.png" alt="食堂" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
-											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>食堂</div>
-												<div style={{ fontSize: 15, color: '#444' }}>食堂のメニューを確認できます</div>
-											</div>
-										</div>
-									</Link>
-									<Link href="/main/exam_list" style={{ textDecoration: "none" }}>
-										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
-											<img src="https://placehold.jp/120x80.png" alt="試験範囲" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
-											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>試験範囲</div>
-												<div style={{ fontSize: 15, color: '#444' }}>試験範囲を確認できます</div>
-											</div>
-										</div>
-									</Link>
-									<a href="https://attendance-register-by-watashimori-kohl.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
-											<img src="https://placehold.jp/120x80.png" alt="出欠登録サイト(同製作者による外部サイト)" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
-											<div>
-												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>出欠登録サイト</div>
-												<div style={{ fontSize: 15, color: '#444' }}>出欠登録を行うことができます。※同製作者による外部サイトです。</div>
-											</div>
-										</div>
-									</a>
 									<Link href="/main/tutorial" style={{ textDecoration: "none" }}>
 										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 											<img src="https://placehold.jp/120x80.png" alt="チュートリアル" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 											<div>
 												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>チュートリアル</div>
 												<div style={{ fontSize: 15, color: '#444' }}>チュートリアルを確認できます</div>
+											</div>
+										</div>
+									</Link>
+									<Link href="/main/tools" style={{ textDecoration: "none" }}>
+										<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+											<img src="https://placehold.jp/120x80.png" alt="便利ツール" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+											<div>
+												<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>ツール</div>
+												<div style={{ fontSize: 15, color: '#444' }}>便利なツールが集合しています</div>
 											</div>
 										</div>
 									</Link>

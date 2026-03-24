@@ -34,6 +34,9 @@ export default function MyPage() {
 	const [loading, setLoading] = useState(true);
 	const [editMode, setEditMode] = useState(false);
 	const [message, setMessage] = useState("");
+	const handleGoAchievement = () => {
+		window.location.href = "/main/achievement";
+	};
 
 	// AuthContext のプロフィールを反映
 	useEffect(() => {
@@ -193,7 +196,10 @@ export default function MyPage() {
 										: "未登録"}
 								</span>
 							</div>
-							<button onClick={() => setEditMode(true)} style={{ marginTop: 18, padding: "10px 32px", background: "#333", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>編集</button>
+							<div style={{ display: "flex", gap: 16, marginTop: 18 }}>
+								<button onClick={() => setEditMode(true)} style={{ flex: 1, padding: "10px 0", background: "#333", color: "#fff", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #1976d222", transition: "background 0.2s" }}>編集</button>
+								<button onClick={handleGoAchievement} style={{ flex: 1, padding: "10px 0", background: "#ffd700", color: "#333", border: "none", borderRadius: 8, fontWeight: 600, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #ffd70044", transition: "background 0.2s" }}>称号ページへ</button>
+							</div>
 						</div>
 					) : (
 						<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
