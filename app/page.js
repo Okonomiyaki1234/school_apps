@@ -1,12 +1,20 @@
 
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <LoginPageInner />
+        </Suspense>
+    );
+}
+
+function LoginPageInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, loading: authLoading } = useAuth();
