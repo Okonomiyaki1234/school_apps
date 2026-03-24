@@ -4,55 +4,188 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../../../lib/supabase";
 import { useAuth } from "../../../../context/AuthContext";
 
+const blockTypes = [
+  { type: "title", label: "タイトル" },
+  { type: "text", label: "本文" },
+  { type: "image", label: "画像" },
+];
+
+import { useRef, useState as useLocalState } from "react";
+
+function BlockEditor({ block, onChange, onDelete, index, moveUp, moveDown, total }) {
+  const fileInputRef = useRef();
+  const [uploading, setUploading] = useLocalState(false);
+  const [uploadError, setUploadError] = useLocalState("");
+
+  // 画像アップロード処理
+  const handleFileChange = async (e) => {
+    setUploadError("");
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split('.').pop();
+    const fileName = `club_${Date.now()}_${Math.floor(Math.random()*10000)}.${ext}`;
+    const { data, error } = await supabase.storage.from("club-images").upload(fileName, file, { upsert: false });
+    if (error) {
+      setUploadError("アップロード失敗: " + error.message);
+      setUploading(false);
+      return;
+    }
+    // 公開URL取得
+    const { data: urlData } = supabase.storage.from("club-images").getPublicUrl(fileName);
+    if (urlData?.publicUrl) {
+      onChange({ ...block, value: urlData.publicUrl });
+    } else {
+      setUploadError("URL取得失敗");
+    }
+    setUploading(false);
+  };
+
+  return (
+    <div style={{
+      background: "#f7faff",
+      borderRadius: 10,
+      boxShadow: "0 2px 8px #eee",
+      padding: 16,
+      marginBottom: 16,
+      position: "relative"
+    }}>
+      <div style={{ marginBottom: 8, fontWeight: 600, fontSize: 15 }}>{blockTypes.find(b => b.type === block.type)?.label}</div>
+      {block.type === "title" && (
+        <input
+          type="text"
+          value={block.value || ""}
+          onChange={e => onChange({ ...block, value: e.target.value })}
+          placeholder="タイトルを入力"
+          style={{ width: "100%", fontSize: 20, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          required
+        />
+      )}
+      {block.type === "text" && (
+        <textarea
+          value={block.value || ""}
+          onChange={e => onChange({ ...block, value: e.target.value })}
+          placeholder="本文を入力"
+          rows={4}
+          style={{ width: "100%", fontSize: 16, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+          required
+        />
+      )}
+      {block.type === "image" && (
+        <div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <input
+              type="text"
+              value={block.value || ""}
+              onChange={e => onChange({ ...block, value: e.target.value })}
+              placeholder="画像URLを入力 またはアップロード"
+              style={{ width: "100%", fontSize: 15, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+              disabled={uploading}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+              disabled={uploading}
+            />
+            <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} disabled={uploading} style={{ fontSize: 13, borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', padding: '6px 12px' }}>{uploading ? "アップロード中..." : "画像選択"}</button>
+          </div>
+          {uploadError && <div style={{ color: '#d32f2f', fontSize: 13, marginBottom: 4 }}>{uploadError}</div>}
+          {block.value && (
+            <img src={block.value} alt="プレビュー" style={{ maxWidth: 200, marginTop: 8, borderRadius: 6, boxShadow: "0 2px 8px #eee" }} />
+          )}
+        </div>
+      )}
+      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+        <button type="button" onClick={moveUp} disabled={index === 0} style={{ fontSize: 13 }}>↑</button>
+        <button type="button" onClick={moveDown} disabled={index === total - 1} style={{ fontSize: 13 }}>↓</button>
+        <button type="button" onClick={onDelete} style={{ color: '#d32f2f', fontSize: 13 }}>削除</button>
+      </div>
+    </div>
+  );
+}
+
 export default function ClubNewPage() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [blocks, setBlocks] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user, profile } = useAuth();
   const router = useRouter();
+  const [error, setError] = useState("");
 
   if (profile?.role !== "admin") {
     return <div>権限がありません。</div>;
   }
 
+  const addBlock = (type) => {
+    setBlocks([...blocks, { type, value: "" }]);
+  };
+
+  const updateBlock = (idx, newBlock) => {
+    setBlocks(blocks.map((b, i) => (i === idx ? newBlock : b)));
+  };
+
+  const deleteBlock = (idx) => {
+    setBlocks(blocks.filter((_, i) => i !== idx));
+  };
+
+  const moveBlock = (from, to) => {
+    if (to < 0 || to >= blocks.length) return;
+    const newBlocks = [...blocks];
+    const [moved] = newBlocks.splice(from, 1);
+    newBlocks.splice(to, 0, moved);
+    setBlocks(newBlocks);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    if (blocks.length === 0) {
+      setError("最低1つ以上のブロックを追加してください。");
+      return;
+    }
+    // タイトル必須チェック
+    if (!blocks.some(b => b.type === "title" && b.value.trim() !== "")) {
+      setError("タイトルブロックを1つ以上追加してください。");
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.from("clubs").insert({
-      name,
-      description,
-      image_url: imageUrl,
+      content: blocks,
       created_by: user.id,
     });
     setLoading(false);
     if (error) {
-      alert("作成に失敗しました: " + error.message);
+      setError("作成に失敗しました: " + error.message);
     } else {
       router.push("/main/clubs");
     }
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: "48px auto 0 auto", padding: 16 }}>
-      <h2>新しい部活/委員会を作成</h2>
+    <div style={{ maxWidth: 600, margin: "48px auto 0 auto", padding: 24 }}>
+      <h2 style={{ fontSize: 24, marginBottom: 20 }}>新しい部活/委員会ページ作成</h2>
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>名前<br />
-            <input value={name} onChange={e => setName(e.target.value)} required style={{ width: "100%" }} />
-          </label>
+        {blocks.map((block, idx) => (
+          <BlockEditor
+            key={idx}
+            block={block}
+            index={idx}
+            total={blocks.length}
+            onChange={b => updateBlock(idx, b)}
+            onDelete={() => deleteBlock(idx)}
+            moveUp={() => moveBlock(idx, idx - 1)}
+            moveDown={() => moveBlock(idx, idx + 1)}
+          />
+        ))}
+        <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+          {blockTypes.map(bt => (
+            <button type="button" key={bt.type} onClick={() => addBlock(bt.type)} style={{ padding: "8px 16px", borderRadius: 6, background: "#1976d2", color: "#fff", border: "none", fontSize: 15 }}>{bt.label}を追加</button>
+          ))}
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>説明<br />
-            <textarea value={description} onChange={e => setDescription(e.target.value)} style={{ width: "100%" }} />
-          </label>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>画像URL（任意）<br />
-            <input value={imageUrl} onChange={e => setImageUrl(e.target.value)} style={{ width: "100%" }} />
-          </label>
-        </div>
-        <button type="submit" disabled={loading}>{loading ? "作成中..." : "作成"}</button>
+        {error && <div style={{ color: '#d32f2f', marginBottom: 12 }}>{error}</div>}
+        <button type="submit" disabled={loading} style={{ padding: "10px 32px", borderRadius: 8, background: "#388e3c", color: "#fff", border: "none", fontSize: 17, fontWeight: 600 }}>{loading ? "作成中..." : "ページを作成"}</button>
       </form>
     </div>
   );
