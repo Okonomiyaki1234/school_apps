@@ -65,10 +65,24 @@ export function AuthProvider({ children }) {
 
   // 未ログイン時のリダイレクト
   useEffect(() => {
-    if (!loading && !user && !PUBLIC_PATHS.includes(pathname)) {
-      router.replace({ pathname: "/", query: { reason: "auth" } });
-    }
-  }, [loading, user, pathname, router]);
+    let didForceSignOut = false;
+    const forceSignOutIfUserRole = async () => {
+      if (!loading && !user && !PUBLIC_PATHS.includes(pathname)) {
+        router.replace({ pathname: "/", query: { reason: "auth" } });
+        return;
+      }
+      // roleがuserのときも強制サインアウト・リダイレクト
+      if (!loading && user && profile?.role === "user" && !PUBLIC_PATHS.includes(pathname) && !didForceSignOut) {
+        didForceSignOut = true;
+        await supabase.auth.signOut();
+        setUser(null);
+        setProfile(null);
+        router.replace({ pathname: "/", query: { reason: "role" } });
+      }
+    };
+    forceSignOutIfUserRole();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, user, profile, pathname]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
