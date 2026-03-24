@@ -159,7 +159,7 @@ export default function Header({
                   boxShadow: "0 1px 4px #0001"
                 }}
                 onClick={() => setMenuOpen(false)}
-              >ホーム/リロード</Link>
+              >ホーム</Link>
               <button
                 onClick={() => { scrollToTop(); setMenuOpen(false); }}
                 style={{

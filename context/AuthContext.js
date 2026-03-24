@@ -68,16 +68,18 @@ export function AuthProvider({ children }) {
     let didForceSignOut = false;
     const forceSignOutIfUserRole = async () => {
       if (!loading && !user && !PUBLIC_PATHS.includes(pathname)) {
-        router.replace({ pathname: "/", query: { reason: "auth" } });
+        alert("正式なログインが必要です。");
+        router.replace("/");
         return;
       }
       // roleがuserのときも強制サインアウト・リダイレクト
       if (!loading && user && profile?.role === "user" && !PUBLIC_PATHS.includes(pathname) && !didForceSignOut) {
         didForceSignOut = true;
+        alert("組織側で登録されていないため、ログインできません。");
         await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
-        router.replace({ pathname: "/", query: { reason: "role" } });
+        router.replace("/");
       }
     };
     forceSignOutIfUserRole();
