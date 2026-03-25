@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
 import TagFilter from "@/components/TagFilter";
 
 export default function NoticePage() {
@@ -333,7 +332,6 @@ export default function NoticePage() {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 }

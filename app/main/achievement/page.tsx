@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
 import { Achievement } from "@/types/achievement";
 
 const LEVEL_COLORS = {
@@ -153,7 +152,6 @@ export default function AchievementPage() {
           );
         })}
       </div>
-      <Footer />
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
 
 
 export default function ExamAdminPage() {
@@ -283,7 +282,6 @@ export default function ExamAdminPage() {
         ))}
       </section>
       </div>
-      <Footer />
     </>
   );
 }

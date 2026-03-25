@@ -38,6 +38,18 @@ export default function Footer() {
           フィードバック
         </a>
       </div>
+      <div
+        style={{
+          fontSize: 20,
+          color: '#1565c0',
+          fontWeight: 800,
+          marginBottom: 12,
+          letterSpacing: 2,
+          textShadow: '0 2px 8px #b3d1f7',
+        }}
+      >
+        「利他共生」
+      </div>
       <div style={{ fontSize: 14, color: '#1976d2', marginBottom: 8, fontWeight: 500 }}>
         「ここでの大抵の不具合は、リロードすれば直る！」
       </div>

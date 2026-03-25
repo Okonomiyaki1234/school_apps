@@ -19,6 +19,27 @@ import { useAuth } from "../../../../context/AuthContext";
     }
   };
 
+  // 画像削除処理
+  const handleDelete = async (img) => {
+    setError("");
+    setSuccess("");
+    if (!window.confirm(`本当に画像「${img.file_name}」を削除しますか？`)) return;
+    // ストレージから削除
+    const { error: storageError } = await supabase.storage.from("club-images").remove([img.file_name]);
+    if (storageError) {
+      setError("ストレージ削除失敗: " + storageError.message);
+      return;
+    }
+    // DBから削除
+    const { error: dbError } = await supabase.from("club_images").delete().eq("file_name", img.file_name);
+    if (dbError) {
+      setError("DB削除失敗: " + dbError.message);
+      return;
+    }
+    setSuccess("画像を削除しました。");
+    fetchImages();
+  };
+
 
 export default function ClubImageUploadPage() {
   const { user, profile } = useAuth();
@@ -114,8 +135,9 @@ export default function ClubImageUploadPage() {
               <img src={img.url} alt={img.file_name} style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 6, marginBottom: 4 }} />
               <div style={{ fontSize: 12, wordBreak: 'break-all', marginBottom: 4 }}>{img.file_name}</div>
               <div style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>{new Date(img.created_at).toLocaleString()}</div>
-              <button onClick={() => {navigator.clipboard.writeText(img.url); setCopyMsg(img.file_name); setTimeout(()=>setCopyMsg(""), 1200);}} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', cursor: 'pointer' }}>URLコピー</button>
+              <button onClick={() => {navigator.clipboard.writeText(img.url); setCopyMsg(img.file_name); setTimeout(()=>setCopyMsg(""), 1200);}} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', cursor: 'pointer', marginBottom: 4 }}>URLコピー</button>
               {copyMsg === img.file_name && <span style={{ color: '#388e3c', fontSize: 11, marginLeft: 4 }}>コピーしました</span>}
+              <button onClick={() => handleDelete(img)} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, background: '#d32f2f', color: '#fff', border: 'none', cursor: 'pointer', marginTop: 4 }}>削除</button>
             </div>
           ))}
           {images.length === 0 && <div style={{ color: '#888', fontSize: 14 }}>画像がありません。</div>}

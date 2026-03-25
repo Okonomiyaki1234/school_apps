@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
 import { iconList } from "@/lib/iconList";
 
 const DEFAULT_ACHIEVEMENT_LIST = [
@@ -284,7 +283,6 @@ export default function MyPage() {
 				</div>
 				{/* 今後追加予定の要素はここに新しいdivを追加していけばOK */}
 			</div>
-			<Footer />
 		</>
 	);
 }

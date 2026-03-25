@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState, use } from "react";
 import { supabase } from "@/lib/supabase";
-import Footer from "@/components/Footer";
 import { iconList } from "@/lib/iconList";
 
 const DEFAULT_ACHIEVEMENT_LIST = [
@@ -114,7 +113,6 @@ export default function OtherUserPage({ params }) {
 				</div>
 				{/* 今後追加予定の要素はここに新しいdivを追加していけばOK */}
 			</div>
-			<Footer />
 		</>
 	);
 }

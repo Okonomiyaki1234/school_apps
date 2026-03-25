@@ -1,5 +1,4 @@
 "use client";
-import Footer from "@/components/Footer";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
@@ -75,6 +74,15 @@ export default function SchoolHome() {
                                             </div>
                                         </div>
                                     </a>
+                                    <Link href="/main/ads" style={{ textDecoration: "none" }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+                                            <img src="https://placehold.jp/120x80.png" alt="広告" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+                                            <div>
+                                                <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>広告</div>
+                                                <div style={{ fontSize: 15, color: '#444' }}>広告情報を確認できます</div>
+                                            </div>
+                                        </div>
+                                    </Link>
                                     {/* Coming Soon... */}
                                     <div style={{ opacity: 0.6, pointerEvents: 'none' }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18 }}>
@@ -88,7 +96,6 @@ export default function SchoolHome() {
                                     {/* ここに新しい機能を追加する場合は同じ構造で行を増やせばOK */}
                                 </div>
             </div>
-            <Footer/>
         </>
     );
 }

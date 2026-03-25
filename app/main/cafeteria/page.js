@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 
 const categories = [
@@ -124,7 +123,6 @@ export default function CafeteriaPage() {
 					<p>※製作者が進化したらモバイルオーダー機能を追加したいなぁ…</p>
 				</div>
 			</main>
-			<Footer />
 		</>
 	);
 }

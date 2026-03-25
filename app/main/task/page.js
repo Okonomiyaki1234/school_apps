@@ -4,7 +4,6 @@
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import { useAuth } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
 import Link from 'next/link';
 
 
@@ -87,7 +86,6 @@ export default function TaskListPage() {
 					</tbody>
 				</table>
 			</main>
-			<Footer />
 		</>
 	);
 }
