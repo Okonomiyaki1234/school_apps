@@ -28,15 +28,18 @@ export default function Footer() {
         <a href="https://shukutoku.ed.jp/" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           学校公式ホームページ
         </a>
-        <Link href="/terms" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/read/terms" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           利用規約
         </Link>
-        <Link href="/privacy" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/read/privacy" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           プライバシーポリシー
         </Link>
         <a href="https://forms.gle/Us1XA89gTS3fpuBn6" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           フィードバック
         </a>
+      </div>
+      <div style={{ fontSize: 14, color: '#1976d2', marginBottom: 8, fontWeight: 500 }}>
+        「ここでの大抵の不具合は、リロードすれば直る！」
       </div>
       <div style={{ fontSize: 13, color: "#888" }}>
         &copy; {new Date().getFullYear()} 淑徳中学・高等学校ポータル

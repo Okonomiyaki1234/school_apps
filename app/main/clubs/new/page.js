@@ -1,6 +1,8 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "../../../../lib/supabase";
 import { useAuth } from "../../../../context/AuthContext";
 
@@ -11,6 +13,7 @@ const blockTypes = [
 ];
 
 import { useRef, useState as useLocalState } from "react";
+import ClubImageList from "../image_list.js";
 
 function BlockEditor({ block, onChange, onDelete, index, moveUp, moveDown, total }) {
   const fileInputRef = useRef();
@@ -73,26 +76,19 @@ function BlockEditor({ block, onChange, onDelete, index, moveUp, moveDown, total
       )}
       {block.type === "image" && (
         <div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <div style={{ marginBottom: 8 }}>
+            <ClubImageList
+              selectedUrl={block.value || ""}
+              onSelect={url => onChange({ ...block, value: url })}
+            />
             <input
               type="text"
               value={block.value || ""}
               onChange={e => onChange({ ...block, value: e.target.value })}
-              placeholder="画像URLを入力 またはアップロード"
+              placeholder="画像URLを直接入力も可"
               style={{ width: "100%", fontSize: 15, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
-              disabled={uploading}
             />
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-              disabled={uploading}
-            />
-            <button type="button" onClick={() => fileInputRef.current && fileInputRef.current.click()} disabled={uploading} style={{ fontSize: 13, borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', padding: '6px 12px' }}>{uploading ? "アップロード中..." : "画像選択"}</button>
           </div>
-          {uploadError && <div style={{ color: '#d32f2f', fontSize: 13, marginBottom: 4 }}>{uploadError}</div>}
           {block.value && (
             <img src={block.value} alt="プレビュー" style={{ maxWidth: 200, marginTop: 8, borderRadius: 6, boxShadow: "0 2px 8px #eee" }} />
           )}
@@ -165,8 +161,15 @@ export default function ClubNewPage() {
 
   return (
     <div style={{ maxWidth: 600, margin: "48px auto 0 auto", padding: 24 }}>
+      <div style={{ marginBottom: 24 }}>
+        <Link href="/main/clubs" style={{ color: '#1976d2', marginRight: 16 }}>一覧に戻る</Link>
+        <Link href="/" style={{ color: '#1976d2' }}>ホームに戻る</Link>
+      </div>
       <h2 style={{ fontSize: 24, marginBottom: 20 }}>新しい部活/委員会ページ作成</h2>
       <form onSubmit={handleSubmit}>
+        <div style={{ color: '#1976d2', fontSize: 14, marginBottom: 12 }}>
+          ※ 一覧のサムネイル画像は「一番上に配置されている画像ブロック」が自動的に使われます。
+        </div>
         {blocks.map((block, idx) => (
           <BlockEditor
             key={idx}
