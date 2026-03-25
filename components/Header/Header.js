@@ -20,8 +20,14 @@ export default function Header({
     setLoggingOut(false);
   };
 
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // PWA用リロードボタン
+  const handleReload = () => {
+    window.location.reload();
   };
 
   const userDisplay = loading
@@ -98,6 +104,20 @@ export default function Header({
               cursor: "pointer"
             }}
           >トップへ</button>
+          <button
+            onClick={handleReload}
+            style={{
+              background: bgColor,
+              color: textColor,
+              border: "none",
+              borderRadius: 6,
+              padding: "8px 16px",
+              fontWeight: 600,
+              fontSize: 15,
+              marginLeft: 8,
+              cursor: "pointer"
+            }}
+          >リロード</button>
         </nav>
       </div>
       {/* PC用ユーザー情報・ログアウト */}
@@ -176,6 +196,22 @@ export default function Header({
                   textAlign: "center"
                 }}
               >トップへ</button>
+              <button
+                onClick={() => { handleReload(); setMenuOpen(false); }}
+                style={{
+                  background: "#fff",
+                  color: accentColor,
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "12px 32px",
+                  fontWeight: 600,
+                  fontSize: 20,
+                  margin: "12px 0",
+                  width: 180,
+                  boxShadow: "0 1px 4px #0001",
+                  textAlign: "center"
+                }}
+              >リロード</button>
               <button
                 onClick={() => { handleLogout(); setMenuOpen(false); }}
                 disabled={loggingOut || loading}
