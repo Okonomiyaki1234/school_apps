@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -9,11 +10,14 @@ const AuthContext = createContext(null);
 const PUBLIC_PATHS = ["/", "/auth/register"];
 
 export function AuthProvider({ children }) {
+
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
+  const initialized = useRef(false);
 
   const fetchProfile = async (currentUser) => {
     if (!currentUser) {
@@ -33,20 +37,38 @@ export function AuthProvider({ children }) {
     return null;
   };
 
+
+  // getSessionにタイムアウトfallbackを追加
+  const getSessionWithTimeout = async (timeoutMs = 3000) => {
+    try {
+      return await Promise.race([
+        supabase.auth.getSession(),
+        new Promise((resolve) => setTimeout(() => resolve({ data: { session: null } }), timeoutMs)),
+      ]);
+    } catch (e) {
+      return { data: { session: null } };
+    }
+  };
+
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
     let isMounted = true;
 
+    // 初回のみgetSession（タイムアウト付き）
     const initialize = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      setLoading(true);
+      setError(null);
+      const { data: { session } } = await getSessionWithTimeout();
       if (!isMounted) return;
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       await fetchProfile(currentUser);
       setLoading(false);
     };
-
     initialize();
 
+    // onAuthStateChangeを主軸に
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (!isMounted) return;
@@ -115,12 +137,21 @@ export function AuthProvider({ children }) {
         user,
         profile,
         loading,
+        error,
         signOut,
         refreshProfile,
         getRoleLabel,
       }}
     >
-      {children}
+      {/* 認証確認中UI改善例 */}
+      {loading ? (
+        <div style={{ textAlign: "center", marginTop: 80 }}>
+          <div>認証確認中…</div>
+          {error && <div style={{ color: 'red', marginTop: 16 }}>認証ストレージの初期化に失敗しました。<br />リロードやPWAの再起動をお試しください。</div>}
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }
