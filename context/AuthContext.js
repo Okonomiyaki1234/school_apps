@@ -58,42 +58,57 @@ export function AuthProvider({ children }) {
     if (initialized.current) return;
     initialized.current = true;
     let isMounted = true;
+    let timeoutId = null;
+    let finished = false;
 
-    // 初回のみgetSession（タイムアウト付き）
-    const initialize = async () => {
-      setLoading(true);
-      setError(null);
-      setAuthStatus("unknown");
-      const result = await getSessionWithTimeout();
-      if (!isMounted) return;
-      if (result.timeout) {
-        // ストレージ遅延・未準備
-        setAuthStatus("timeout");
-        setLoading(false);
-        return;
-      }
-      const currentUser = result.data.session?.user ?? null;
-      setUser(currentUser);
-      await fetchProfile(currentUser);
-      setAuthStatus(currentUser ? "authenticated" : "unauthenticated");
-      setLoading(false);
-    };
-    initialize();
-
-    // onAuthStateChangeを主軸に
+    // onAuthStateChangeでセッションが来たら即反映
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        if (!isMounted) return;
+        if (!isMounted || finished) return;
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         await fetchProfile(currentUser);
         setAuthStatus(currentUser ? "authenticated" : "unauthenticated");
         setLoading(false);
+        finished = true;
+        if (timeoutId) clearTimeout(timeoutId);
       }
     );
 
+    // 初回のみgetSession（タイムアウトは10秒）
+    const initialize = async () => {
+      setLoading(true);
+      setError(null);
+      setAuthStatus("unknown");
+      const result = await getSessionWithTimeout(10000); // 10秒待つ
+      if (!isMounted || finished) return;
+      const currentUser = result.data.session?.user ?? null;
+      if (currentUser) {
+        setUser(currentUser);
+        await fetchProfile(currentUser);
+        setAuthStatus("authenticated");
+        setLoading(false);
+        finished = true;
+        if (timeoutId) clearTimeout(timeoutId);
+      } else {
+        // 10秒経過してもセッションが来なければtimeout扱い
+        setAuthStatus("timeout");
+        setLoading(false);
+      }
+    };
+    initialize();
+
+    // 10秒経過後にtimeoutにする（onAuthStateChangeで即反映されていれば何もしない）
+    timeoutId = setTimeout(() => {
+      if (!finished) {
+        setAuthStatus("timeout");
+        setLoading(false);
+      }
+    }, 10000);
+
     return () => {
       isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, []);
