@@ -11,9 +11,13 @@ const PUBLIC_PATHS = ["/", "/auth/register"];
 
 export function AuthProvider({ children }) {
 
+  // "未判定"状態を明示的に管理
+  // loading: true = 判定中, false = 判定済み
+  // authStatus: "unknown" | "authenticated" | "unauthenticated" | "timeout"
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authStatus, setAuthStatus] = useState("unknown");
   const [error, setError] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -43,10 +47,10 @@ export function AuthProvider({ children }) {
     try {
       return await Promise.race([
         supabase.auth.getSession(),
-        new Promise((resolve) => setTimeout(() => resolve({ data: { session: null } }), timeoutMs)),
+        new Promise((resolve) => setTimeout(() => resolve({ timeout: true, data: { session: null } }), timeoutMs)),
       ]);
     } catch (e) {
-      return { data: { session: null } };
+      return { timeout: true, data: { session: null } };
     }
   };
 
@@ -59,11 +63,19 @@ export function AuthProvider({ children }) {
     const initialize = async () => {
       setLoading(true);
       setError(null);
-      const { data: { session } } = await getSessionWithTimeout();
+      setAuthStatus("unknown");
+      const result = await getSessionWithTimeout();
       if (!isMounted) return;
-      const currentUser = session?.user ?? null;
+      if (result.timeout) {
+        // ストレージ遅延・未準備
+        setAuthStatus("timeout");
+        setLoading(false);
+        return;
+      }
+      const currentUser = result.data.session?.user ?? null;
       setUser(currentUser);
       await fetchProfile(currentUser);
+      setAuthStatus(currentUser ? "authenticated" : "unauthenticated");
       setLoading(false);
     };
     initialize();
@@ -75,6 +87,7 @@ export function AuthProvider({ children }) {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         await fetchProfile(currentUser);
+        setAuthStatus(currentUser ? "authenticated" : "unauthenticated");
         setLoading(false);
       }
     );
@@ -89,24 +102,27 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let didForceSignOut = false;
     const forceSignOutIfUserRole = async () => {
-      if (!loading && !user && !PUBLIC_PATHS.includes(pathname)) {
+      // タイムアウト時はリダイレクトしない
+      if (authStatus === "timeout") return;
+      if (authStatus === "unauthenticated" && !PUBLIC_PATHS.includes(pathname)) {
         alert("正式なログインが必要です。");
         router.replace("/");
         return;
       }
       // roleがuserのときも強制サインアウト・リダイレクト
-      if (!loading && user && profile?.role === "user" && !PUBLIC_PATHS.includes(pathname) && !didForceSignOut) {
+      if (authStatus === "authenticated" && user && profile?.role === "user" && !PUBLIC_PATHS.includes(pathname) && !didForceSignOut) {
         didForceSignOut = true;
         alert("組織側で登録されていないため、ログインできません。");
         await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
+        setAuthStatus("unauthenticated");
         router.replace("/");
       }
     };
     forceSignOutIfUserRole();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, user, profile, pathname]);
+  }, [authStatus, user, profile, pathname]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -138,16 +154,21 @@ export function AuthProvider({ children }) {
         profile,
         loading,
         error,
+        authStatus,
         signOut,
         refreshProfile,
         getRoleLabel,
       }}
     >
-      {/* 認証確認中UI改善例 */}
-      {loading ? (
+      {/* 認証確認中UI改善例＋タイムアウト時の案内・リトライ */}
+      {authStatus === "unknown" || loading ? (
         <div style={{ textAlign: "center", marginTop: 80 }}>
           <div>認証確認中…</div>
-          {error && <div style={{ color: 'red', marginTop: 16 }}>認証ストレージの初期化に失敗しました。<br />リロードやPWAの再起動をお試しください。</div>}
+        </div>
+      ) : authStatus === "timeout" ? (
+        <div style={{ textAlign: "center", marginTop: 80 }}>
+          <div style={{ color: 'red', marginBottom: 16 }}>認証ストレージの初期化に時間がかかっています。<br />リロードやPWAの再起動をお試しください。</div>
+          <button onClick={() => window.location.reload()} style={{ padding: '8px 24px', fontSize: 16 }}>再読み込み</button>
         </div>
       ) : (
         children
