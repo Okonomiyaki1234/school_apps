@@ -1,6 +1,5 @@
 "use client";
-
-import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -10,18 +9,12 @@ const AuthContext = createContext(null);
 const PUBLIC_PATHS = ["/", "/auth/register"];
 
 export function AuthProvider({ children }) {
-
-  // "未判定"状態を明示的に管理
-  // loading: true = 判定中, false = 判定済み
-  // authStatus: "unknown" | "authenticated" | "unauthenticated" | "timeout"
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authStatus, setAuthStatus] = useState("unknown");
-  const [error, setError] = useState(null);
+  const [initialized, setInitialized] = useState(false); // 初期化完了フラグ
   const router = useRouter();
   const pathname = usePathname();
-  const initialized = useRef(false);
 
   const fetchProfile = async (currentUser) => {
     if (!currentUser) {
@@ -41,103 +34,73 @@ export function AuthProvider({ children }) {
     return null;
   };
 
-
-  // getSessionにタイムアウトfallbackを追加
-  const getSessionWithTimeout = async (timeoutMs = 3000) => {
-    try {
-      return await Promise.race([
-        supabase.auth.getSession(),
-        new Promise((resolve) => setTimeout(() => resolve({ timeout: true, data: { session: null } }), timeoutMs)),
-      ]);
-    } catch (e) {
-      return { timeout: true, data: { session: null } };
-    }
-  };
-
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
     let isMounted = true;
-    let timeoutId = null;
-    let finished = false;
 
-    // onAuthStateChangeでセッションが来たら即反映
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (!isMounted || finished) return;
+    const initialize = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (!isMounted) return;
+        if (error) {
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+          setInitialized(true);
+          return;
+        }
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         await fetchProfile(currentUser);
-        setAuthStatus(currentUser ? "authenticated" : "unauthenticated");
         setLoading(false);
-        finished = true;
-        if (timeoutId) clearTimeout(timeoutId);
+        setInitialized(true);
+      } catch (e) {
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+        setInitialized(true);
+      }
+    };
+
+    initialize();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (!isMounted) return;
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        await fetchProfile(currentUser);
+        setLoading(false);
+        setInitialized(true);
       }
     );
 
-    // 初回のみgetSession（タイムアウトは10秒）
-    const initialize = async () => {
-      setLoading(true);
-      setError(null);
-      setAuthStatus("unknown");
-      const result = await getSessionWithTimeout(10000); // 10秒待つ
-      if (!isMounted || finished) return;
-      const currentUser = result.data.session?.user ?? null;
-      if (currentUser) {
-        setUser(currentUser);
-        await fetchProfile(currentUser);
-        setAuthStatus("authenticated");
-        setLoading(false);
-        finished = true;
-        if (timeoutId) clearTimeout(timeoutId);
-      } else {
-        // 10秒経過してもセッションが来なければtimeout扱い
-        setAuthStatus("timeout");
-        setLoading(false);
-      }
-    };
-    initialize();
-
-    // 10秒経過後にtimeoutにする（onAuthStateChangeで即反映されていれば何もしない）
-    timeoutId = setTimeout(() => {
-      if (!finished) {
-        setAuthStatus("timeout");
-        setLoading(false);
-      }
-    }, 10000);
-
     return () => {
       isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, []);
 
   // 未ログイン時のリダイレクト
   useEffect(() => {
-    let didForceSignOut = false;
-    const forceSignOutIfUserRole = async () => {
-      // タイムアウト時はリダイレクトしない
-      if (authStatus === "timeout") return;
-      if (authStatus === "unauthenticated" && !PUBLIC_PATHS.includes(pathname)) {
-        alert("正式なログインが必要です。");
-        router.replace("/");
-        return;
-      }
-      // roleがuserのときも強制サインアウト・リダイレクト
-      if (authStatus === "authenticated" && user && profile?.role === "user" && !PUBLIC_PATHS.includes(pathname) && !didForceSignOut) {
-        didForceSignOut = true;
-        alert("組織側で登録されていないため、ログインできません。");
-        await supabase.auth.signOut();
+    // 初期化が終わっていない場合は何もしない
+    if (!initialized) return;
+
+    // ログイン必須ページで未ログインならリダイレクト
+    if (!loading && !user && !PUBLIC_PATHS.includes(pathname)) {
+      alert("正式なログインが必要です。");
+      router.replace("/");
+      return;
+    }
+    // ロールがuserなら強制サインアウト
+    if (!loading && user && profile?.role === "user" && !PUBLIC_PATHS.includes(pathname)) {
+      alert("組織側で登録されていないため、ログインできません。");
+      supabase.auth.signOut().then(() => {
         setUser(null);
         setProfile(null);
-        setAuthStatus("unauthenticated");
         router.replace("/");
-      }
-    };
-    forceSignOutIfUserRole();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authStatus, user, profile, pathname]);
+      });
+    }
+  }, [loading, user, profile, pathname, initialized]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -168,26 +131,12 @@ export function AuthProvider({ children }) {
         user,
         profile,
         loading,
-        error,
-        authStatus,
         signOut,
         refreshProfile,
         getRoleLabel,
       }}
     >
-      {/* 認証確認中UI改善例＋タイムアウト時の案内・リトライ */}
-      {authStatus === "unknown" || loading ? (
-        <div style={{ textAlign: "center", marginTop: 80 }}>
-          <div>認証確認中…</div>
-        </div>
-      ) : authStatus === "timeout" ? (
-        <div style={{ textAlign: "center", marginTop: 80 }}>
-          <div style={{ color: 'red', marginBottom: 16 }}>認証ストレージの初期化に時間がかかっています。<br />リロードやPWAの再起動をお試しください。</div>
-          <button onClick={() => window.location.reload()} style={{ padding: '8px 24px', fontSize: 16 }}>再読み込み</button>
-        </div>
-      ) : (
-        children
-      )}
+      {children}
     </AuthContext.Provider>
   );
 }
