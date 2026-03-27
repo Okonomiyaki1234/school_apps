@@ -60,13 +60,14 @@ export async function handleLoginAchievement(userId: string) {
   const todayStr = today.toISOString().slice(0, 10);
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("last_login, total_login, keep_login, achievement_list, created_at")
+    .select("last_login, total_login, keep_login, achievement_list, created_at, themes")
     .eq("id", userId)
     .single();
   if (error || !profile) return;
 
-  let { last_login, total_login, keep_login, achievement_list, created_at } = profile;
+  let { last_login, total_login, keep_login, achievement_list, created_at, themes } = profile;
   achievement_list = Array.isArray(achievement_list) ? achievement_list : [];
+  themes = Array.isArray(themes) ? themes : [];
 
   // ログイン判定
   if (last_login === todayStr) return; // 本日ログイン済み
@@ -123,16 +124,37 @@ export async function handleLoginAchievement(userId: string) {
     }
   });
 
-  await supabase
-    .from("profiles")
-    .update({ last_login, total_login, keep_login, achievement_list })
-    .eq("id", userId);
+  // テーマ付与ロジック
+  const themeUnlocks = [
+    { count: 5, theme: "cool" },
+    { count: 10, theme: "cute" },
+    { count: 15, theme: "natural" },
+  ];
+  let themesUpdated = false;
+  themeUnlocks.forEach(({ count, theme }) => {
+    if (achievement_list.length >= count && !themes.includes(theme)) {
+      themes.push(theme);
+      themesUpdated = true;
+    }
+  });
+
+  if (themesUpdated) {
+    await supabase
+      .from("profiles")
+      .update({ last_login, total_login, keep_login, achievement_list, themes })
+      .eq("id", userId);
+  } else {
+    await supabase
+      .from("profiles")
+      .update({ last_login, total_login, keep_login, achievement_list })
+      .eq("id", userId);
+  }
 }
 
 export async function handleUseAchievement(userId: string, type: "calendar" | "menu") {
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select(`use_${type}, achievement_list`)
+    .select(`use_${type}, achievement_list, themes`)
     .eq("id", userId)
     .single();
   if (error || !profile) return;
@@ -143,14 +165,35 @@ export async function handleUseAchievement(userId: string, type: "calendar" | "m
     useCount = profile.use_menu || 0;
   }
   let achievement_list = Array.isArray(profile.achievement_list) ? profile.achievement_list : [];
+  let themes = Array.isArray(profile.themes) ? profile.themes : [];
   useCount++;
   USE_TITLES[type].forEach(t => {
     if (useCount === t.value && !achievement_list.includes(t.name)) {
       achievement_list.push(t.name);
     }
   });
-  await supabase
-    .from("profiles")
-    .update({ [`use_${type}`]: useCount, achievement_list })
-    .eq("id", userId);
+  // テーマ付与ロジック
+  const themeUnlocks = [
+    { count: 5, theme: "cool" },
+    { count: 10, theme: "cute" },
+    { count: 15, theme: "natural" },
+  ];
+  let themesUpdated = false;
+  themeUnlocks.forEach(({ count, theme }) => {
+    if (achievement_list.length >= count && !themes.includes(theme)) {
+      themes.push(theme);
+      themesUpdated = true;
+    }
+  });
+  if (themesUpdated) {
+    await supabase
+      .from("profiles")
+      .update({ [`use_${type}`]: useCount, achievement_list, themes })
+      .eq("id", userId);
+  } else {
+    await supabase
+      .from("profiles")
+      .update({ [`use_${type}`]: useCount, achievement_list })
+      .eq("id", userId);
+  }
 }

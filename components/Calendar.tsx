@@ -395,6 +395,29 @@ export default function Calendar() {
               >
                 <h3 style={{ marginBottom: 16, fontSize: 22 }}>{popup.title}</h3>
                 <div style={{ fontSize: 16, color: "#333", marginBottom: 24, whiteSpace: "pre-wrap" }}>{popup.description || "説明はありません"}</div>
+                {/* タグ表示追加 */}
+                <div style={{ marginBottom: 20 }}>
+                  <span style={{ fontWeight: 'bold', fontSize: 15, marginRight: 8 }}>タグ:</span>
+                  {(() => {
+                    // 対象イベントを特定
+                    const event = events.find(e => e.title === popup.title && e.description === popup.description);
+                    if (event && event.tags && event.tags.length > 0) {
+                      return event.tags.map((tag: string) => (
+                        <span key={tag} style={{
+                          display: 'inline-block',
+                          background: '#e3e3f7',
+                          color: '#333',
+                          borderRadius: 6,
+                          padding: '2px 10px',
+                          fontSize: 14,
+                          marginRight: 6
+                        }}>{tag}</span>
+                      ));
+                    } else {
+                      return <span style={{ color: '#aaa', fontSize: 14 }}>タグなし</span>;
+                    }
+                  })()}
+                </div>
                 {isAdmin && (
                   <button
                     onClick={async () => {
