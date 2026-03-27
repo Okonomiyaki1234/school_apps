@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false); // 初期化完了フラグ
+  const [isInitializing, setIsInitializing] = useState(true); // 排他制御用
   const router = useRouter();
   const pathname = usePathname();
 
@@ -46,6 +47,7 @@ export function AuthProvider({ children }) {
           setProfile(null);
           setLoading(false);
           setInitialized(true);
+          setIsInitializing(false);
           return;
         }
         const currentUser = session?.user ?? null;
@@ -53,11 +55,13 @@ export function AuthProvider({ children }) {
         await fetchProfile(currentUser);
         setLoading(false);
         setInitialized(true);
+        setIsInitializing(false);
       } catch (e) {
         setUser(null);
         setProfile(null);
         setLoading(false);
         setInitialized(true);
+        setIsInitializing(false);
       }
     };
 
@@ -66,11 +70,12 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (!isMounted) return;
+        // 初期化中は副作用を起こさない
+        if (isInitializing) return;
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         await fetchProfile(currentUser);
-        setLoading(false);
-        setInitialized(true);
+        // setLoading, setInitializedは絶対に呼ばない
       }
     );
 
@@ -78,7 +83,7 @@ export function AuthProvider({ children }) {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [isInitializing]);
 
   // 未ログイン時のリダイレクト
   useEffect(() => {
