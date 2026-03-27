@@ -1,7 +1,7 @@
 "use client";
 // タグ選択肢（今はファイル内で定義）
 const TAG_OPTIONS = [
-  "中学1年", "中学2年", "中学3年", "高校1年", "高校2年", "高校3年", "図書館"
+  "中学1年", "中学2年", "中学3年", "高校1年", "高校2年", "高校3年", "その他"
 ];
 import FullCalendar from "@fullcalendar/react";
 import type { EventDropArg, EventContentArg } from "@fullcalendar/core";
