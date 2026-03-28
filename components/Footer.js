@@ -28,11 +28,14 @@ export default function Footer() {
         <a href="https://shukutoku.ed.jp/" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           学校公式ホームページ
         </a>
-        <Link href="/read/terms" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/main/read/terms" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           利用規約
         </Link>
-        <Link href="/read/privacy" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/main/read/privacy" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           プライバシーポリシー
+        </Link>
+        <Link href="/main/read/credits" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
+          クレジット
         </Link>
         <a href="https://forms.gle/Us1XA89gTS3fpuBn6" target="_blank" rel="noopener noreferrer" style={{ color: "#1976d2", margin: "0 16px", textDecoration: "none", fontWeight: 500 }}>
           フィードバック
