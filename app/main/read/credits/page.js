@@ -25,7 +25,7 @@ export default function CreditsPage() {
 			<h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32 }}>運営・開発</h2>
 			<ul style={{ marginLeft: 24, marginBottom: 16 }}>
                 <li>
-					イラスト作成：
+					全部：
 					<a
 						href=""
 						target="_blank"
