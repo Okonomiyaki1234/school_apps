@@ -13,12 +13,12 @@ export default function CreditsPage() {
 				<li>
 					イラスト作成：
 					<a
-						href=""
+						href="https://youtube.com/@usamaru_0303?si=gnZW4cQASayNAPyh"
 						target="_blank"
 						rel="noopener noreferrer"
 						style={{ fontWeight: 600, color: "#1976d2", textDecoration: "underline" }}
 					>
-						Misa（仮）
+						M A R U 。
 					</a>
 				</li>
 			</ul>

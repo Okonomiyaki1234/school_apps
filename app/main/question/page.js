@@ -64,21 +64,7 @@ const QuestionPage = () => {
         >
           <div className={styles['question-title']}>{q.title}</div>
           <div className={styles['question-content']}>{q.content}</div>
-          <div className={styles['question-user']}>
-            <a href={`/main/my_page/${q.user_id}`} style={{textDecoration:'none'}} onClick={e => e.stopPropagation()}>
-              <div style={{display:'flex',alignItems:'center',gap:'8px',background:'#f5f7fa',borderRadius:'8px',padding:'6px 12px',margin:'8px 0',boxShadow:'0 1px 4px #0001',cursor:'pointer',transition:'box-shadow 0.2s'}}>
-                <img src={userIcons[q.user_id] || '/icons/default.png'} alt="icon" style={{width:'28px',height:'28px',borderRadius:'50%',border:'1px solid #bcd',objectFit:'cover'}} />
-                <span style={{fontWeight:'bold',fontSize:'1rem',color:'#222'}}>
-                  {userNames[q.user_id] ? userNames[q.user_id] : (userNames[q.user_id] === '' ? '未登録' : '未登録')}
-                </span>
-                {getRoleLabel(userRoles[q.user_id]) && (
-                  <span style={{marginLeft:'6px',fontSize:'0.95rem',color:'#222',fontWeight:'bold',background:'#e3f2fd',borderRadius:'4px',padding:'2px 8px'}}>
-                    {getRoleLabel(userRoles[q.user_id])}
-                  </span>
-                )}
-              </div>
-            </a>
-          </div>
+          {/* 質問者情報は匿名化のため非表示 */}
           <div className={styles['answer-list']}>
             {getAnswersForQuestion(q.id).map(a => (
               <div className={styles['answer-card']} key={a.id}>

@@ -2,22 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { useAuth } from "../../../../context/AuthContext";
-// ファイル選択時の処理
-  const handleFileChange = (e) => {
-    setError("");
-    setSuccess("");
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(selectedFile);
-    } else {
-      setPreviewUrl("");
-    }
-  };
+
 
   // 画像削除処理
   const handleDelete = async (img) => {
@@ -42,6 +27,22 @@ import { useAuth } from "../../../../context/AuthContext";
 
 
 export default function ClubImageUploadPage() {
+    // ファイル選択時の処理（Hooksの後に定義）
+    const handleFileChange = (e) => {
+      setError("");
+      setSuccess("");
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      if (selectedFile) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        setPreviewUrl("");
+      }
+    };
   const { user, profile } = useAuth();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");

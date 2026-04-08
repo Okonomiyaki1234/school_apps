@@ -101,7 +101,7 @@ export default function SchoolHome() {
 								</div>
 							</div>
 						</Link>
-						<Link href="/main/clubs" style={{ textDecoration: "none" }}>
+						{/* <Link href="/main/clubs" style={{ textDecoration: "none" }}>
 							<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 								<img src="https://placehold.jp/120x80.png" alt="部活・委員会" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
 								<div>
@@ -109,7 +109,7 @@ export default function SchoolHome() {
 									<div style={{ fontSize: 15, color: '#444' }}>部活・委員会の情報を確認できます</div>
 								</div>
 							</div>
-						</Link>
+						</Link> */}
 						<Link href="/main/tools" style={{ textDecoration: "none" }}>
 							<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
 								<img src="https://placehold.jp/120x80.png" alt="便利ツール" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
