@@ -60,6 +60,11 @@ export default function ClassroomsPage() {
       <h1 style={{ fontSize: 28, marginBottom: 24, fontWeight: 700, letterSpacing: 1 }}>ページ一覧</h1>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
         <button onClick={handleCreate} style={{ padding: '10px 24px', borderRadius: 8, background: '#1976d2', color: '#fff', fontWeight: 600, border: 'none', fontSize: 16 }}>＋ 新しいページを作成</button>
+        <Link href="/main/classrooms/image_upload" style={{ textDecoration: 'none' }}>
+          <button type="button" style={{ padding: '10px 24px', borderRadius: 8, background: '#ffa000', color: '#fff', fontWeight: 600, border: 'none', fontSize: 16 }}>
+            画像アップロード
+          </button>
+        </Link>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {classrooms

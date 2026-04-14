@@ -10,6 +10,12 @@ const features = [
 		img: 'https://placehold.jp/120x80.png?text=Intro',
 	},
 	{
+		title: 'ホーム',
+		description: 'ホーム画面の説明を見る',
+		href: '/main/tutorial/contents/t_home',
+		img: 'https://placehold.jp/120x80.png?text=Home',
+	},
+	{
 		title: 'マイページ',
 		description: 'マイページ機能の説明を見る',
 		href: '/main/tutorial/contents/t_my_page',
@@ -45,7 +51,49 @@ const features = [
 		href: '/main/tutorial/contents/t_exam_list',
 		img: 'https://placehold.jp/120x80.png?text=Exam',
 	},
-    {
+	{
+		title: '食堂',
+		description: '食堂機能の説明を見る',
+		href: '/main/tutorial/contents/t_cafeteria',
+		img: 'https://placehold.jp/120x80.png?text=Cafeteria',
+	},
+	{
+		title: 'クラス',
+		description: 'クラス機能の説明を見る',
+		href: '/main/tutorial/contents/t_classrooms',
+		img: 'https://placehold.jp/120x80.png?text=Classrooms',
+	},
+	{
+		title: '部活・委員会',
+		description: '部活・委員会機能の説明を見る',
+		href: '/main/tutorial/contents/t_clubs',
+		img: 'https://placehold.jp/120x80.png?text=Clubs',
+	},
+	{
+		title: '質問',
+		description: '質問機能の説明を見る',
+		href: '/main/tutorial/contents/t_question',
+		img: 'https://placehold.jp/120x80.png?text=Question',
+	},
+	{
+		title: '課題',
+		description: '課題機能の説明を見る',
+		href: '/main/tutorial/contents/t_task',
+		img: 'https://placehold.jp/120x80.png?text=Task',
+	},
+	{
+		title: 'ツール',
+		description: 'ツール機能の説明を見る',
+		href: '/main/tutorial/contents/t_tools',
+		img: 'https://placehold.jp/120x80.png?text=Tools',
+	},
+	{
+		title: '広告',
+		description: '広告機能の説明を見る',
+		href: '/main/tutorial/contents/t_ads',
+		img: 'https://placehold.jp/120x80.png?text=Ads',
+	},
+	{
 		title: 'Googleチャット',
 		description: 'Googleチャットの使い方を見る',
 		href: '/main/tutorial/contents/t_i_chat',
