@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
     }
     const { data, error } = await supabase
       .from("profiles")
-      .select("name, role, grade, class, themes, icon, description, achievement, achievement_list, total_login, keep_login, last_login, created_at")
+      .select("name, role, grade, class, themes, icon, description, achievement, achievement_list, total_login, keep_login, last_login, created_at, isParent")
       .eq("id", currentUser.id)
       .single();
     if (!error && data) {
@@ -120,7 +120,9 @@ export function AuthProvider({ children }) {
   };
 
   // ロール表示用ヘルパー
-  const getRoleLabel = (role) => {
+  // isParent対応: 保護者モードなら「保護者」
+  const getRoleLabel = (role, isParent = false) => {
+    if (role === "student" && isParent) return "保護者";
     switch (role) {
       case "student": return "生徒";
       case "council": return "生徒会";

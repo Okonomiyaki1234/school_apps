@@ -9,6 +9,9 @@ const DEFAULT_ACHIEVEMENT_LIST = [
 ];
 const DEFAULT_ICON = iconList[0];
 
+// isParentのデフォルト値
+const DEFAULT_IS_PARENT = false;
+
 const GRADE_OPTIONS = [
 	"中学1年生", "中学2年生", "中学3年生",
 	"高校1年生", "高校2年生", "高校3年生",
@@ -16,7 +19,7 @@ const GRADE_OPTIONS = [
 ];
 
 export default function MyPage() {
-	const { user, profile: authProfile, loading: authLoading } = useAuth();
+	const { user, profile: authProfile, loading: authLoading, refreshProfile } = useAuth();
 	const [profile, setProfile] = useState({
 		name: "",
 		grade: "",
@@ -25,7 +28,8 @@ export default function MyPage() {
 		description: "",
 		achievement: [],
 		achievement_list: DEFAULT_ACHIEVEMENT_LIST,
-		icon: DEFAULT_ICON
+		icon: DEFAULT_ICON,
+		isParent: DEFAULT_IS_PARENT
 	});
 	const JUNIOR_CLASSES = ["A", "B", "C", "D", "E"];
 	const HIGH_CLASSES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -49,7 +53,8 @@ export default function MyPage() {
 				description: authProfile.description || "",
 				achievement: Array.isArray(authProfile.achievement) ? authProfile.achievement : [],
 				achievement_list: Array.isArray(authProfile.achievement_list) ? authProfile.achievement_list : DEFAULT_ACHIEVEMENT_LIST,
-				icon: authProfile.icon || DEFAULT_ICON
+				icon: authProfile.icon || DEFAULT_ICON,
+				isParent: typeof authProfile.isParent === "boolean" ? authProfile.isParent : DEFAULT_IS_PARENT
 			}));
 		}
 		setLoading(false);
@@ -119,12 +124,14 @@ export default function MyPage() {
 				class: classValue,
 				description: profile.description,
 				achievement: profile.achievement,
-				icon: profile.icon
+				icon: profile.icon,
+				isParent: profile.isParent
 			})
 			.eq("id", user.id);
 		setLoading(false);
 		setEditMode(false);
 		setMessage(error ? "更新失敗" : "更新しました");
+		if (!error) refreshProfile && refreshProfile();
 	};
 
 	if (loading) return <div>読み込み中...</div>;
@@ -149,6 +156,34 @@ export default function MyPage() {
 				<div style={{ flex: "1 1 340px", minWidth: 320, background: "#ffffff", borderRadius: 16, boxShadow: "0 2px 12px #1976d211", padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
 					<h2 style={{ fontSize: 28, color: "#333", marginBottom: 18, textAlign: "center", letterSpacing: 1 }}>マイページ</h2>
 					{message && <div style={{ color: message === "更新失敗" ? "#d32f2f" : "#388e3c", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>{message}</div>}
+					{/* 保護者モードスイッチ（studentのみ表示） */}
+					{!editMode && authProfile?.role === "student" && (
+						<div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, justifyContent: "center" }}>
+							<span style={{ fontWeight: 600, color: "#1976d2" }}>保護者モード</span>
+							<label style={{ display: "inline-flex", alignItems: "center", cursor: "pointer" }}>
+								<input
+									type="checkbox"
+									checked={profile.isParent}
+									onChange={async e => {
+										setProfile(prev => ({ ...prev, isParent: e.target.checked }));
+										// すぐ保存
+										setLoading(true);
+										const { error } = await supabase
+											.from("profiles")
+											.update({ isParent: e.target.checked })
+											.eq("id", user.id);
+										setLoading(false);
+										setMessage(error ? "切替失敗" : e.target.checked ? "保護者モードに切替" : "生徒モードに切替");
+										if (!error) refreshProfile && refreshProfile();
+									}}
+									style={{ width: 32, height: 32, accentColor: "#1976d2" }}
+								/>
+								<span style={{ marginLeft: 8, color: profile.isParent ? "#1976d2" : "#888", fontWeight: 600 }}>
+									{profile.isParent ? "ON（保護者）" : "OFF（生徒）"}
+								</span>
+							</label>
+						</div>
+					)}
 					{!editMode ? (
 						<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 							{/* アイコンを大きく中央に表示 */}

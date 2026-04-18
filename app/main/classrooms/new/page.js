@@ -1,6 +1,6 @@
 "use client";
 // クラスごとの最大ページ数（変更しやすいよう定数化）
-const MAX_PAGES_PER_CLASS = 3;
+const MAX_PAGES_PER_CLASS = 10;
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";

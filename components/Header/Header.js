@@ -33,7 +33,7 @@ export default function Header({
   const userDisplay = loading
     ? "認証確認中..."
     : user && profile
-      ? `ログイン中: ${profile.name}（${getRoleLabel(profile.role)}）`
+      ? `ログイン中: ${profile.name}（${getRoleLabel(profile.role, profile.isParent)}）`
       : user
         ? "ユーザー情報取得中..."
         : "ログインしていません";

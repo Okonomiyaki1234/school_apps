@@ -15,6 +15,7 @@ export default function ClassroomsPage() {
   const isOperator = profile?.role === "operator";
   const allowedRoles = ["admin", "council", "operator"];
   const isPrivileged = allowedRoles.includes(profile?.role);
+  const isParent = !!profile?.isParent;
   const router = useRouter();
 
   useEffect(() => {
@@ -58,14 +59,17 @@ export default function ClassroomsPage() {
         <Link href="/" style={{ color: '#1976d2' }}>ホームに戻る</Link>
       </div>
       <h1 style={{ fontSize: 28, marginBottom: 24, fontWeight: 700, letterSpacing: 1 }}>ページ一覧</h1>
-      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-        <button onClick={handleCreate} style={{ padding: '10px 24px', borderRadius: 8, background: '#1976d2', color: '#fff', fontWeight: 600, border: 'none', fontSize: 16 }}>＋ 新しいページを作成</button>
-        <Link href="/main/classrooms/image_upload" style={{ textDecoration: 'none' }}>
-          <button type="button" style={{ padding: '10px 24px', borderRadius: 8, background: '#ffa000', color: '#fff', fontWeight: 600, border: 'none', fontSize: 16 }}>
-            画像アップロード
-          </button>
-        </Link>
-      </div>
+      {/* 保護者は追加・アップロード不可 */}
+      {!isParent && (
+        <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+          <button onClick={handleCreate} style={{ padding: '10px 24px', borderRadius: 8, background: '#1976d2', color: '#fff', fontWeight: 600, border: 'none', fontSize: 16 }}>＋ 新しいページを作成</button>
+          <Link href="/main/classrooms/image_upload" style={{ textDecoration: 'none' }}>
+            <button type="button" style={{ padding: '10px 24px', borderRadius: 8, background: '#ffa000', color: '#fff', fontWeight: 600, border: 'none', fontSize: 16 }}>
+              画像アップロード
+            </button>
+          </Link>
+        </div>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {classrooms
           .filter(c => {
@@ -98,10 +102,13 @@ export default function ClassroomsPage() {
                   )}
                   <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>{titleBlock ? titleBlock.value : c.name}</div>
                   <div style={{ color: '#888', fontSize: 15 }}>{`学年: ${c.grade ?? '-'} / クラス: ${c.class ?? '-'}`}</div>
-                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                    <button type="button" onClick={e => { e.preventDefault(); handleEdit(c.id); }} style={{ padding: '6px 18px', borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', fontSize: 15 }}>編集</button>
-                    <button type="button" onClick={e => { e.preventDefault(); handleDelete(c.id); }} style={{ padding: '6px 18px', borderRadius: 6, background: '#e53935', color: '#fff', border: 'none', fontSize: 15 }}>削除</button>
-                  </div>
+                  {/* 保護者は編集・削除不可 */}
+                  {!isParent && (
+                    <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                      <button type="button" onClick={e => { e.preventDefault(); handleEdit(c.id); }} style={{ padding: '6px 18px', borderRadius: 6, background: '#1976d2', color: '#fff', border: 'none', fontSize: 15 }}>編集</button>
+                      <button type="button" onClick={e => { e.preventDefault(); handleDelete(c.id); }} style={{ padding: '6px 18px', borderRadius: 6, background: '#e53935', color: '#fff', border: 'none', fontSize: 15 }}>削除</button>
+                    </div>
+                  )}
                 </div>
               </Link>
             );

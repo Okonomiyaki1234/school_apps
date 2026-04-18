@@ -111,7 +111,7 @@ export default function Footer() {
       </div>
       {/* バージョン表記（小さく・見やすく） */}
       <div className="footer-version" aria-label="バージョン情報">
-        β版1.1
+        β版1.2
       </div>
       <div
         style={{
