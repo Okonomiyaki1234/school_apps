@@ -62,7 +62,7 @@ export default function RegisterPage() {
 					{error && <div style={{ color: "#d00", fontSize: 15 }}>{error}</div>}
 				</form>
 				{/* Google新規登録ボタン */}
-				<button
+				{/* <button
 					onClick={async () => {
 						setLoading(true);
 						setError("");
@@ -75,7 +75,7 @@ export default function RegisterPage() {
 				>
 					<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" style={{ width: 24, height: 24 }} />
 					Googleで新規登録/ログイン
-				</button>
+				</button> */}
 				</>
 			)}
 			{/* app/page.js（ログインページ）へ戻るボタン */}

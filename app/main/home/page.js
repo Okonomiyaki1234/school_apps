@@ -9,6 +9,7 @@ export default function SchoolHome() {
 	const [notices, setNotices] = useState([]);
 	const { profile } = useAuth();
 	const isParent = !!profile?.isParent;
+	const isOperator = profile?.role === "operator";
 	useEffect(() => {
 		(async () => {
 			const { data, error } = await supabase
@@ -103,6 +104,19 @@ export default function SchoolHome() {
 										<div>
 											<div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>匿名質問</div>
 											<div style={{ fontSize: 15, color: '#444' }}>匿名で質問を投稿・閲覧できます</div>
+										</div>
+									</div>
+								</Link>
+							)}
+
+							{/* operator専用カード */}
+							{isOperator && (
+								<Link href="/main/operator" style={{ textDecoration: "none" }}>
+									<div style={{ display: "flex", alignItems: "center", gap: 24, background: '#fffbe7', borderRadius: 12, boxShadow: '0 2px 8px #ffe082', padding: 18, cursor: 'pointer', border: '2px solid #ffd54f', transition: 'background 0.2s' }}>
+										<img src="https://placehold.jp/120x80.png?text=Operator" alt="運営管理" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #ffe082' }} />
+										<div>
+											<div style={{ fontSize: 20, fontWeight: 600, color: '#b28704', marginBottom: 6 }}>運営管理</div>
+											<div style={{ fontSize: 15, color: '#b28704' }}>ユーザー管理など運営専用ページ</div>
 										</div>
 									</div>
 								</Link>
