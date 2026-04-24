@@ -1,22 +1,23 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { iconList } from "@/lib/iconList";
 
 const DEFAULT_ACHIEVEMENT_LIST = [
-	"皆勤賞", "優秀賞", "部活リーダー", "生徒会", "ボランティア", "英検合格", "漢検合格"
+  "皆勤賞", "優秀賞", "部活リーダー", "生徒会", "ボランティア", "英検合格", "漢検合格"
 ];
-const DEFAULT_ICON = iconList[0];
-
+const DEFAULT_ICON = iconList[0]?.icons?.[0] || "";
 // isParentのデフォルト値
 const DEFAULT_IS_PARENT = false;
 
 const GRADE_OPTIONS = [
-	"中学1年生", "中学2年生", "中学3年生",
-	"高校1年生", "高校2年生", "高校3年生",
-	"卒業生", "その他"
+  "中学1年生", "中学2年生", "中学3年生",
+  "高校1年生", "高校2年生", "高校3年生",
+  "卒業生", "その他"
 ];
+
 
 export default function MyPage() {
 	const { user, profile: authProfile, loading: authLoading, refreshProfile } = useAuth();
@@ -31,6 +32,8 @@ export default function MyPage() {
 		icon: DEFAULT_ICON,
 		isParent: DEFAULT_IS_PARENT
 	});
+	// アイコングループの展開状態
+	const [openGroups, setOpenGroups] = useState(() => iconList.map(g => g.group === '保存'));
 	const JUNIOR_CLASSES = ["A", "B", "C", "D", "E"];
 	const HIGH_CLASSES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 	const [inputError, setInputError] = useState("");
@@ -239,23 +242,72 @@ export default function MyPage() {
 						<form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 							{inputError && <div style={{ color: "#d32f2f", fontWeight: 600, marginBottom: 4 }}>{inputError}</div>}
 							{/* アイコン選択 */}
-							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-								<label style={{ fontWeight: 600, color: "#1976d2" }}>アイコン</label>
-								<div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-									{iconList.map(icon => (
-										<label key={icon} style={{ cursor: "pointer" }}>
-											<input
-												type="radio"
-												name="icon"
-												value={icon}
-												checked={profile.icon === icon}
-												onChange={handleIconChange}
-												style={{ marginRight: 6 }}
-											/>
-											<img src={icon} alt="icon" style={{ width: 40, height: 40, borderRadius: "50%", border: profile.icon === icon ? "2px solid #1976d2" : "1px solid #bcd", objectFit: "cover" }} />
-										</label>
+							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+								<label style={{ fontWeight: 600, color: "#1976d2", marginBottom: 8 }}>アイコン</label>
+								<div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
+									{iconList.map((group, idx) => (
+										<button
+											key={group.group}
+											type="button"
+											onClick={() => setProfile(prev => ({ ...prev, icon: group.icons[0] }))}
+											style={{
+												background: profile.icon && group.icons.includes(profile.icon) ? "#1976d2" : "#eee",
+												color: profile.icon && group.icons.includes(profile.icon) ? "#fff" : "#1976d2",
+												border: "none",
+												borderRadius: 8,
+												padding: "4px 10px 4px 4px",
+												fontWeight: 600,
+												fontSize: 15,
+												cursor: "pointer",
+												minWidth: 90,
+												display: "flex",
+												alignItems: "center",
+												gap: 6
+											}}
+										>
+											<img src={group.icons[0]} alt={group.group + " 01"} style={{ width: 28, height: 28, borderRadius: "50%", border: "1.5px solid #bcd", objectFit: "cover" }} />
+											<span>{group.group}</span>
+										</button>
 									))}
 								</div>
+								{/* 色ボタン群 */}
+								{(() => {
+									// 色名リスト
+									const colorNames = [
+										"薄黄色", "薄橙色", "橙色", "赤色", "ピンク色", "薄紫色", "薄青色", "空色", "黄緑色", "白色",
+										"灰色", "黒色", "抹茶色", "緑色", "青緑色", "藍色", "紫色", "薩摩芋色", "茶色", "木色"
+									];
+									// 選択中グループを特定
+									const currentGroup = iconList.find(g => g.icons.includes(profile.icon)) || iconList[0];
+									return (
+										<>
+											<div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+												{currentGroup.icons.map((icon, i) => (
+													<button
+														key={icon}
+														type="button"
+														onClick={() => setProfile(prev => ({ ...prev, icon }))}
+														style={{
+															background: profile.icon === icon ? "#1976d2" : "#eee",
+															color: profile.icon === icon ? "#fff" : "#1976d2",
+															border: "none",
+															borderRadius: 6,
+															padding: "4px 10px",
+															fontWeight: 600,
+															fontSize: 14,
+															cursor: "pointer",
+															minWidth: 48
+														}}
+													>{colorNames[i] || String(i+1).padStart(2, "0")}</button>
+												))}
+											</div>
+											{/* 選択中アイコンのプレビュー */}
+											<div style={{ textAlign: "center", margin: "8px 0" }}>
+												<img src={profile.icon} alt="icon" style={{ width: 56, height: 56, borderRadius: "50%", border: "2px solid #1976d2", objectFit: "cover", boxShadow: "0 2px 8px #1976d233" }} />
+											</div>
+										</>
+									);
+								})()}
 							</div>
 							{/* ...existing code... */}
 							<div style={{ background: "#fff", borderRadius: 10, boxShadow: "0 1px 6px #0001", padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
