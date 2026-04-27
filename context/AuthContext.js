@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 const AuthContext = createContext(null);
 
 // 認証不要のパス
-const PUBLIC_PATHS = ["/", "/auth/register"];
+const PUBLIC_PATHS = ["/", "/auth/register", "/auth/reset"];
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

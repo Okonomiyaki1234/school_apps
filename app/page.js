@@ -108,6 +108,12 @@ function LoginPageInner() {
                 </button>
                 {error && <div style={{ color: "#d00", fontSize: 15 }}>{error}</div>}
             </form>
+            {/* パスワードを忘れた場合のリンク */}
+            <div style={{ marginTop: 16 }}>
+                <Link href="/auth/reset" style={{ color: "#1976d2", textDecoration: "underline", fontSize: 16 }}>
+                    パスワードを忘れた場合はこちら
+                </Link>
+            </div>
             {/* Googleログインボタン */}
             <button
                 onClick={async () => {
