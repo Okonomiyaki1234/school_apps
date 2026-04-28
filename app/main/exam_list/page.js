@@ -14,6 +14,8 @@ export default function ExamListPage() {
   const [selectedGrades, setSelectedGrades] = useState([]);
   const [selectedClasses, setSelectedClasses] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userGrade, setUserGrade] = useState("");
+  const [userRole, setUserRole] = useState("");
 
   const gradeOptions = [
     '中学1年生', '中学2年生', '中学3年生',
@@ -25,6 +27,8 @@ export default function ExamListPage() {
   useEffect(() => {
     if (authLoading) return;
     setIsAdmin(authProfile?.role === 'admin');
+    setUserGrade(authProfile?.grade || "");
+    setUserRole(authProfile?.role || "");
     (async () => {
       const { data, error } = await supabase
         .from('exam')
@@ -34,11 +38,17 @@ export default function ExamListPage() {
     })();
   }, [authProfile, authLoading]);
 
+  // 生徒(student/council)は自分の学年のみ表示
+  let visibleExams = exams;
+  if (userRole === 'student' || userRole === 'council') {
+    visibleExams = exams.filter(e => e.grade === userGrade);
+  }
+
   // クラス一覧を取得
-  const classOptions = Array.from(new Set(exams.map(e => e.class))).filter(Boolean);
+  const classOptions = Array.from(new Set(visibleExams.map(e => e.class))).filter(Boolean);
 
   // クライアントサイドでフィルタリング
-  let filtered = exams;
+  let filtered = visibleExams;
   if (selectedGrades.length > 0) {
     filtered = filtered.filter(e => selectedGrades.includes(e.grade));
   }
@@ -70,7 +80,7 @@ export default function ExamListPage() {
       <header style={{marginBottom:'2rem'}}>
         <h1 style={{fontSize:'2rem',fontWeight:700,marginBottom:'0.5rem',color:'#234'}}>試験範囲一覧</h1>
         <p style={{color:'#555',marginBottom:'1.5rem'}}>学年・クラスごとに試験範囲を確認できます。</p>
-        <GradeFilter gradeOptions={gradeOptions} selectedGrade={selectedGrades.join(',')} onChange={setSelectedGrades} />
+        {/* <GradeFilter gradeOptions={gradeOptions} selectedGrade={selectedGrades.join(',')} onChange={setSelectedGrades} /> */}
         <ClassFilter classOptions={classOptions} selectedClass={selectedClasses.join(',')} onChange={setSelectedClasses} />
         {isAdmin && (
           <div style={{ marginTop: '1rem' }}>
@@ -108,6 +118,8 @@ export default function ExamListPage() {
         ))}
       </section>
       <style>{`
+        /* GradeFilterを非表示にする */
+        .grade-filter-hidden { display: none !important; }
         @media (max-width: 700px) {
           main { padding: 1rem 0.2rem; }
           h1 { font-size: 1.3rem; }
