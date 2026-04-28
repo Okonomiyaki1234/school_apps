@@ -1,4 +1,3 @@
-
 "use client";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -39,10 +38,16 @@ export default function Footer() {
           font-weight: 500;
           font-size: 15px;
         }
-        .footer-version {
+        .footer-version-group {
           position: absolute;
           left: 12px;
           bottom: 8px;
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          z-index: 10;
+        }
+        .footer-version, .footer-updated {
           font-size: 11px;
           color: #888;
           opacity: 0.8;
@@ -50,7 +55,7 @@ export default function Footer() {
           border-radius: 4px;
           padding: 1px 6px;
           font-weight: 500;
-          z-index: 10;
+          border: 1px solid #e0e0e0;
           transition: left 0.2s, right 0.2s, bottom 0.2s;
         }
         .footer-logout {
@@ -73,10 +78,20 @@ export default function Footer() {
             flex-direction: column;
             gap: 4px 0;
           }
-          .footer-version {
+          .footer-version-group {
             position: static;
-            display: block;
+            display: flex;
+            justify-content: center;
             margin: 12px auto 0 auto;
+            left: unset;
+            bottom: unset;
+            text-align: center;
+            gap: 8px;
+          }
+          .footer-version, .footer-updated {
+            position: static;
+            display: inline-block;
+            margin: 0;
             left: unset;
             bottom: unset;
             text-align: center;
@@ -109,9 +124,10 @@ export default function Footer() {
           フィードバック
         </a>
       </div>
-      {/* バージョン表記（小さく・見やすく） */}
-      <div className="footer-version" aria-label="バージョン情報">
-        β版1.2
+      {/* バージョン表記と最終更新日 */}
+      <div className="footer-version-group">
+        <span className="footer-version" aria-label="バージョン情報">β版1.3</span>
+        <span className="footer-updated" aria-label="最終更新日">最終更新: 2026/04/28</span>
       </div>
       <div
         style={{
