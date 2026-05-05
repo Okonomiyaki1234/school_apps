@@ -20,6 +20,8 @@ export default function OperatorPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [search, setSearch] = useState("");
+	const [gradeFilter, setGradeFilter] = useState("");
+	const [classFilter, setClassFilter] = useState("");
 	// 編集モーダル用
 	const [editUser, setEditUser] = useState(null); // 編集対象ユーザー
 	const [editForm, setEditForm] = useState({ name: "", grade: "", class: "", role: "", isParent: false });
@@ -55,10 +57,18 @@ export default function OperatorPage() {
 	if (authLoading || loading) return <div>読み込み中...</div>;
 	if (error) return <div style={{ color: "#d32f2f", margin: 32 }}>{error}</div>;
 
-	// 検索フィルタ
-	const filtered = users.filter(u =>
-	  !search || (u.name && u.name.toLowerCase().includes(search.toLowerCase()))
-	);
+
+	// 学年・クラスの選択肢生成
+	const gradeOptions = Array.from(new Set(users.map(u => u.grade).filter(Boolean))).sort();
+	const classOptions = Array.from(new Set(users.map(u => u.class).filter(Boolean))).sort();
+
+	// 検索・学年・クラスフィルタ
+	const filtered = users.filter(u => {
+		if (search && (!u.name || !u.name.toLowerCase().includes(search.toLowerCase()))) return false;
+		if (gradeFilter && u.grade !== gradeFilter) return false;
+		if (classFilter && u.class !== classFilter) return false;
+		return true;
+	});
 
 	// ユーザー分類
 	const students = filtered.filter(u => (u.role === "student" || u.role === "council") && !u.isParent);
@@ -116,7 +126,7 @@ export default function OperatorPage() {
 	return (
 		<div style={{ margin: "56px auto 0", padding: 32, maxWidth: 900, minHeight: "70vh", background: "var(--background)", borderRadius: 24, boxShadow: "0 4px 32px #0002" }}>
 			<h2 style={{ fontSize: 28, color: "#1976d2", marginBottom: 24, textAlign: "center", letterSpacing: 1 }}>ユーザー一覧（運営専用）</h2>
-			<div style={{ marginBottom: 32, textAlign: "center" }}>
+			<div style={{ marginBottom: 32, textAlign: "center", display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
 				<input
 					type="text"
 					value={search}
@@ -127,12 +137,35 @@ export default function OperatorPage() {
 						borderRadius: 8,
 						border: "1px solid #bbb",
 						fontSize: 16,
-						width: 260,
-						marginRight: 8
+						width: 200,
+						marginRight: 4
 					}}
 				/>
 				{search && (
-					<button onClick={() => setSearch("")} style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#eee", cursor: "pointer" }}>クリア</button>
+					<button onClick={() => setSearch("")} style={{ padding: "8px 12px", borderRadius: 8, border: "none", background: "#eee", cursor: "pointer" }}>クリア</button>
+				)}
+				<select
+					value={gradeFilter}
+					onChange={e => setGradeFilter(e.target.value)}
+					style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #bbb", fontSize: 16, minWidth: 80 }}
+				>
+					<option value="">学年で絞り込み</option>
+					{gradeOptions.map(g => (
+						<option key={g} value={g}>{g}</option>
+					))}
+				</select>
+				<select
+					value={classFilter}
+					onChange={e => setClassFilter(e.target.value)}
+					style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #bbb", fontSize: 16, minWidth: 80 }}
+				>
+					<option value="">クラスで絞り込み</option>
+					{classOptions.map(c => (
+						<option key={c} value={c}>{c}</option>
+					))}
+				</select>
+				{(gradeFilter || classFilter) && (
+					<button onClick={() => { setGradeFilter(""); setClassFilter(""); }} style={{ padding: "8px 12px", borderRadius: 8, border: "none", background: "#eee", cursor: "pointer" }}>リセット</button>
 				)}
 			</div>
 			{renderTable("生徒・生徒会", students)}

@@ -77,6 +77,18 @@ export default function SchoolHome() {
                                                         </div>
                                                     </a>
                                                 )}
+                                                {/* 保護者はアドバンス非表示 */}
+                                                {/* {!isParent && (
+                                                    <Link href="/main/tools/advance" style={{ textDecoration: "none" }}>
+                                                        <div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
+                                                            <img src="https://placehold.jp/120x80.png" alt="アドバンス" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
+                                                            <div>
+                                                                <div style={{ fontSize: 20, fontWeight: 600, color: '#222', marginBottom: 6 }}>淑徳アドバンス</div>
+                                                                <div style={{ fontSize: 15, color: '#444' }}>淑徳アドバンスの情報を確認できます</div>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                )} */}
                         <Link href="/main/cafeteria" style={{ textDecoration: "none" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 24, background: '#f7faff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 18, cursor: 'pointer', transition: 'background 0.2s' }}>
                                 <img src="https://placehold.jp/120x80.png" alt="食堂" style={{ width: 120, height: 80, borderRadius: 8, objectFit: 'cover', boxShadow: '0 2px 8px #eee' }} />
